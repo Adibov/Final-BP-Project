@@ -3,8 +3,9 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
-#include "menu.c"
+#include "Menu.c"
 
 int main() {
-	tutorial();
+    tutorial();
+
 }
