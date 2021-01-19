@@ -1,3 +1,4 @@
 • Saving current game
 • Saving current ships placement
 • Printing appropriate comments
+• Autosave option
