@@ -2,3 +2,4 @@
 • Saving current ships placement
 • Printing appropriate comments
 • Autosave option
+• Delete a user profile

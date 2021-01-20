@@ -4,11 +4,16 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
+#include "User.c"
+
+/* Typedefs */
+typedef struct User User;
 
 /* functions declrations */
 void Multiplayer(void);
 void Multiplayer_menu(void);
-void Choose_player(void);
+void Choose_user(void);
+User Choose_from_avail(void);
 void New_user(void);
 
 /* functions definitions */
@@ -19,6 +24,10 @@ void Multiplayer() {
 
 void Multiplayer_menu() {
 	system("CLS");
+	Choose_user();
+}
+
+void Choose_user() {
 	printf("\
 First player\n\
 	Choose user:\n\
@@ -29,7 +38,7 @@ First player\n\
 	int option;
 	scanf("%d", &option);
 	if (option == 1)
-		Choose_player();
+		Choose_from_avail();
 	else if (option == 2)
 		New_user();
 	else {
@@ -39,8 +48,9 @@ First player\n\
 	}
 }
 
-void Choose_player() {
-	printf("choose_player");
+User Choose_from_avail() {
+	system("CLS");
+	
 }
 
 void New_user() {
