@@ -29,6 +29,9 @@ void check_files() {
 		/* opendir() failed for some other reason. */
 		system("CLS");
 		printf("Some error occurred :(");
+		#ifdef DEBUG
+			printf("opendir() failed for some other reason");
+		#endif
 		exit(-1);
 	}
 }

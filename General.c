@@ -5,15 +5,16 @@
 #include <assert.h>
 #include <conio.h>
 
-/* Typedefs */
-typedef struct User User;
-
-/* Structs declrations */
-struct User {
-	char name[100];
-	int point;
-};
+#define DEBUG
 
 /* functions declrations */
+void error_exit(char *);
 
 /* functions definitions */
+void error_exit(char *message) {
+	printf("Some error occurred :(\n");
+	#ifdef DEBUG
+		printf("%s", message);
+	#endif
+	exit(-1);
+}
