@@ -7,7 +7,6 @@
 #include "User.c"
 #include "General.c"
 
-/* Typedefs */
 
 /* functions declrations */
 void Multiplayer(void);
@@ -44,8 +43,7 @@ First player\n\
 	else if (option == 2)
 		New_user();
 	else {
-		printf("Invalid input, Press any key to continue.");
-		getch();
+		invalid_input();
 		Multiplayer_menu();
 	}
 }
@@ -56,13 +54,13 @@ User Choose_from_avail() {
 	if (user_file == NULL)
 		error_exit("Cannot fopen user_file");
 
-	User username;
+	User user;
 	int indx = 1;
 	while (1) {
-		if (fread(&username, sizeof(User), 1, user_file) < 1)
+		if (fread(&user, sizeof(User), 1, user_file) < 1)
 			break;
 
-		printf("%d) %s\n", indx, username.name);
+		printf("%d) %s\n", indx, user.name);
 		indx++;
 	}
 	fclose(user_file);
@@ -73,19 +71,67 @@ User Choose_from_avail() {
 		getch();
 		return New_user();
 	}
+	int user_count = indx - 1;
 
-	printf("Enter the id of the username that you want to choose: ");
+	printf("Enter the id of the username that you want to choose (or enter 0 to create a new user): ");
 	scanf("%d", &indx);
+	if (!indx)
+		return New_user();
+	if (indx < 1 || user_count < indx) {
+		invalid_input();
+		return Choose_from_avail();
+	}
+
 	user_file = fopen("Files\\Users.bin", "rb");
 	while (indx--) {
-		if (fread(&username, sizeof(User), 1, user_file) < 1)
+		if (fread(&user, sizeof(User), 1, user_file) < 1)
 			error_exit("Cannot reach indx in user_file");
-		fread(&username, sizeof(User), 1, user_file);
+		fread(&user, sizeof(User), 1, user_file);
 	}
 	fclose(user_file);
-	return username;
+	return user;
 }
 
 User New_user() {
-	printf("new user");
+	system("CLS");
+	char username[200];
+	printf("Enter a username with at most 50 characters: ");
+	gets(username);
+	while (!strlen(username))
+		gets(username);
+	if (strlen(username) > 50) {
+		invalid_input();
+		return New_user();
+	}
+
+	FILE *user_file = fopen("Files\\Users.bin", "rb");
+	if (user_file == NULL)
+		error_exit("Cannot fopen user_file");
+
+	bool does_exist = 0;
+	User user;
+	while (1) {
+		if (fread(&user, sizeof(User), 1, user_file) < 1)
+			break;
+
+		if (!strcmp(user.name, username))
+			does_exist = 1;
+	}
+	fclose(user_file);
+
+	if (does_exist) {
+		system("CLS");
+		printf("This username has been taken, try another one.\nPress any key to continue");
+		getch();
+		return New_user();
+	}
+
+	user_file = fopen("Files\\Users.bin", "ab");
+	if (user_file == NULL)
+		error_exit("Cannot fopen user_file");
+	
+	User *new_user = malloc(sizeof(User));
+	new_user -> point = 0;
+	strcpy(new_user -> name, username);
+	fwrite(new_user, sizeof(User), 1, user_file);
 }

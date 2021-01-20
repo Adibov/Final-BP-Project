@@ -18,3 +18,9 @@ void error_exit(char *message) {
 	#endif
 	exit(-1);
 }
+
+void invalid_input() {
+	system("CLS");
+	printf("Invalid input, Press any key to continue.");
+	getch();
+}

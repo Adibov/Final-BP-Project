@@ -10,7 +10,7 @@ typedef struct User User;
 
 /* Structs declrations */
 struct User {
-	char name[100];
+	char name[60];
 	int point;
 };
 
