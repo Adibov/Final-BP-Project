@@ -8,6 +8,7 @@
 #include <errno.h>
 #include <unistd.h>
 
+
 /* functions declrations */
 void init(void);
 void check_files(void);
@@ -15,9 +16,13 @@ void check_binary_files(void);
 
 /* functions definitions */
 void init() {
+	terminal_color(white);
 	check_files();
 	check_binary_files();
+
 }
+
+
 
 void check_files() {
 	DIR* dir = opendir(".\\Files");

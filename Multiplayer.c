@@ -11,7 +11,7 @@
 /* functions declrations */
 void Multiplayer(void);
 void Multiplayer_menu(void);
-void Choose_user(void);
+User Choose_user(void);
 User Choose_from_avail(void);
 User New_user(void);
 
@@ -23,10 +23,12 @@ void Multiplayer() {
 
 void Multiplayer_menu() {
 	system("CLS");
-	Choose_user();
+	User Player1 = Choose_user();
+	
+	// User Player2 = Choose_user();
 }
 
-void Choose_user() {
+User Choose_user() {
 	printf("\
 First player\n\
 	Choose user:\n\
@@ -36,12 +38,10 @@ First player\n\
 
 	int option;
 	scanf("%d", &option);
-	if (option == 1) {
-		User selected_user = Choose_from_avail();
-		
-	}
+	if (option == 1)
+		return Choose_from_avail();
 	else if (option == 2)
-		New_user();
+		return New_user();
 	else {
 		invalid_input();
 		Multiplayer_menu();
