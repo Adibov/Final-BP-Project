@@ -4,10 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
-#include "Solo_Player.c"
 #include "Multiplayer.c"
-#include "Save_Load.c"
-#include "Setting.c"
 
 /* functions declrations */
 void turorial(void);

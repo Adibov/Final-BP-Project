@@ -1,0 +1,9 @@
+main init
+init menu
+menu multiplayer
+multiplayer solo_player
+solo_player setting
+setting save_load
+save_load general
+general user
+user ship

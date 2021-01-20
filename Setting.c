@@ -4,6 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
+#include "Save_Load.c"
 
 /* functions declrations */
 void Setting(void);

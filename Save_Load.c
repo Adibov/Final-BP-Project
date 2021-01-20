@@ -4,6 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
+#include "General.c"
 
 /* functions declrations */
 void Load(void);

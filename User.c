@@ -4,6 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
+#include "Ship.c"
 
 /* Typedefs */
 typedef struct User User;

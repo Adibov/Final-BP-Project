@@ -7,7 +7,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <unistd.h>
-
+#include "Menu.c"
 
 /* functions declrations */
 void init(void);
@@ -21,7 +21,6 @@ void init() {
 	check_binary_files();
 
 }
-
 
 
 void check_files() {

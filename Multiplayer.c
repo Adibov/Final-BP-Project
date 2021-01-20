@@ -4,9 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
-#include "User.c"
-#include "General.c"
-
+#include "Solo_Player.c"
 
 /* functions declrations */
 void Multiplayer(void);

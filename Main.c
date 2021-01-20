@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <assert.h>
-#include "Menu.c"
 #include "init.c"
 
 int main() {
