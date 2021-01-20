@@ -4,6 +4,7 @@ Simple Battle-Ship Project for BP 99-00 in C language written by me.
 
 ## Requirements
 + _conio.h_ libary (placed in **lib** folder)
++ _windows.h_ library (placed in **lib** folder), So you have to run this program on windows, not linux or mac OS
 + gcc compiler and default libraries
 
 
