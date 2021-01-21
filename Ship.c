@@ -5,12 +5,18 @@
 #include <assert.h>
 #include <conio.h>
 
+/* Global variables */
+enum Direction {vertical, horizontal};
+
 /* Typedefs */
 typedef struct Ship Ship;
+typedef enum Direction Direction;
 
 /* Structs declrations */
 struct Ship {
-	
+	int length, row, column;
+	bool destroyed;
+	Direction direction;
 };
 
 /* functions declrations */

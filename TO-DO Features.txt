@@ -3,3 +3,4 @@
 • Printing appropriate comments
 • Autosave option
 • Delete a user profile
+• Colorful texts

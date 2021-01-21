@@ -10,12 +10,15 @@
 #define DEBUG
 
 /* Global variables */
-enum col_array {gray = 8, blue, green, cyan, red, pink, yellow, white};
+enum color_array {gray = 8, blue, green, cyan, red, pink, yellow, white};
+
+/* Typedefs */
+typedef enum color_array color_array;
 
 /* functions declrations */
 void error_exit(char *);
 void invalid_input(void);
-void terminal_color(enum col_array);
+void terminal_color(enum color_array);
 
 /* functions definitions */
 void error_exit(char *message) {
@@ -33,7 +36,7 @@ void invalid_input() {
 }
 
 
-void terminal_color(enum col_array color) {
+void terminal_color(enum color_array color) {
 	HANDLE Console;
 	Console = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(Console, color);

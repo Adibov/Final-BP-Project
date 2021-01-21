@@ -10,4 +10,5 @@ int main() {
     tutorial();
     main_menu();
     printf("\nend of main");
+    Exit();
 }
