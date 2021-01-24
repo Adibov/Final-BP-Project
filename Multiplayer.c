@@ -163,7 +163,80 @@ First player\n\
 }
 
 Linked_List *Ships_auto_placement() {
-	
+	system("CLS");
+	srand(time(0));
+	char Tmp_map[100][100];
+	for (int i = 0; i < 100; i++)
+		for (int j = 0; j < 100; j++)
+			Tmp_map[i][j] = 'E';
+
+	Linked_List *result = Linked_List_init();
+
+	Ships -> cur = Ships -> head -> nxt;
+	while (Ships -> cur != Ships -> head) {
+		Ship *current_ship = (Ship *)(Ships -> cur -> value);
+		int len = current_ship -> length;
+		bool placed = 0;
+
+		while (!placed) {
+			for (int i = 0; i < map_row; i++)
+				for (int j = 0; j < map_column && !placed; j++) {
+					int direction = (rand() & 1);
+					if (rand() % 2 && check_placement(Tmp_map, i, j, len, direction, map_row, map_column)) {
+						for (int k = 0; k < len; k++)
+							Tmp_map[i + k * dx[direction]][j + k * dy[direction]] = 'S';
+						placed = 1;
+
+						Ship *added_ship = (Ship *)malloc(sizeof(Ship));
+						added_ship -> length = len;
+						added_ship -> row = i;
+						added_ship -> column = j;
+						added_ship -> destroyed = 0;
+						added_ship -> direction = direction;
+						Linked_List_add(result, added_ship);
+					}
+				}
+		}
+		Ships -> cur = Ships -> cur -> nxt;
+		// printf("hey:\n");
+		// for (int i = 0; i < 10; i++) {
+		// 	for (int j = 0; j < 10; j++)
+		// 		printf("%c ", Tmp_map[i][j]);
+		// 	printf("\n");
+		// }
+	}
+
+	printf("Would you want to keep this placement? (y / n)\n");
+	for (int j = 0; j < map_column; j++)
+		printf("+---");
+	printf("+\n");
+	for (int i = 0; i < map_row; i++) {
+		for (int j = 0; j < map_column; j++) {
+			printf("| ");
+			if (Tmp_map[i][j] == 'S')
+				terminal_color(blue);
+			else
+				terminal_color(green);
+			printf("%c ", Tmp_map[i][j]);
+			terminal_color(white);
+		}
+		printf("|\n");
+
+		for (int j = 0; j < map_column; j++)
+		printf("+---");
+		printf("+\n");
+	}
+
+	char option;
+	scanf(" %c", &option);
+	if (option == 'y')
+		return result;
+	else if (option == 'n')
+		return Ships_auto_placement();
+	else {
+		invalid_input();
+		return Ships_placement();
+	}
 }
 
 Linked_List *Ships_manual_placement() {
