@@ -17,9 +17,14 @@ void Multiplayer_menu(void);
 User Choose_user(char *);
 User Choose_from_avail(void);
 User New_user(void);
+void Choose_second_user(void);
 Linked_List *Ships_placement(char *);
 Linked_List *Ships_auto_placement(char *);
 Linked_List *Ships_manual_placement(char *);
+void Add_ships_to_map(char (*)[100], Linked_List *);
+void Start_multiplayer_game(void);
+void Player1_turn(void);
+void Player2_turn(void);
 
 /* functions definitions */
 void Multiplayer() {
@@ -31,19 +36,13 @@ void Multiplayer_menu() {
 	system("CLS");
 	Player1_User = Choose_user("First player");
 	Player1_Ships = Ships_placement("First player");
-	system("CLS");
-	while (1) {
-		Player2_User = Choose_user("Second player");
-		if (!strcmp(Player1_User.name, Player2_User.name)) {
-			system("CLS");
-			printf("This user has been chosen\nPress any key to continue.");
-			getch();
-			system("CLS");
-			continue;
-		}
-		break;
-	}
+	Choose_second_user();
 	Player2_Ships = Ships_placement("Second player");
+	Player1_Map = Map_init();
+	Player2_Map = Map_init();
+	Add_ships_to_map(Player1_Map -> known_map, Player1_Ships);
+	Add_ships_to_map(Player2_Map -> known_map, Player2_Ships);
+	Start_multiplayer_game();
 }
 
 User Choose_user(char *message) {
@@ -153,6 +152,21 @@ User New_user() {
 	fwrite(new_user, sizeof(User), 1, user_file);
 	fclose(user_file);
 	return *new_user;
+}
+
+void Choose_second_user() {
+	system("CLS");
+	while (1) {
+		Player2_User = Choose_user("Second player");
+		if (!strcmp(Player1_User.name, Player2_User.name)) {
+			system("CLS");
+			printf("This user has been chosen\nPress any key to continue.");
+			getch();
+			system("CLS");
+			continue;
+		}
+		break;
+	}
 }
 
 Linked_List *Ships_placement(char *message) {
@@ -297,4 +311,38 @@ Linked_List *Ships_manual_placement(char *message) {
 		invalid_input();
 		return Ships_placement(message);
 	}
+}
+
+void Add_ships_to_map(char Tmp_map[100][100], Linked_List *ships) {
+	system("CLS");
+	ships -> cur = ships -> head -> nxt;
+	while (ships -> cur != ships -> head) {
+		Ship *current_ship = (Ship *)(ships -> cur -> value);
+		int i = current_ship -> row, j = current_ship -> column, len = current_ship -> length, direction = current_ship -> direction;
+		for (int k = 0; k < len; k++) {
+			int x = i + k * dx[direction], y = j + k * dy[direction];
+			Tmp_map[x][y] = 'S';
+		}
+		ships -> cur = ships -> cur -> nxt;
+	}
+}
+
+void Start_multiplayer_game() {
+	int winner_player = 2;
+	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
+		Player1_turn();
+		if (Player2_Ships -> head -> nxt == Player2_Ships -> head) {
+			winner_player = 1;
+			break;
+		}
+		Player2_turn();
+	}
+}
+
+void Player1_turn() {
+
+}
+
+void Player2_turn() {
+	
 }

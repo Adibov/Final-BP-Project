@@ -7,6 +7,7 @@
 
 int main() {
     init();
+    // return 0;
     tutorial();
     main_menu();
     printf("\nend of main");

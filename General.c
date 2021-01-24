@@ -19,7 +19,7 @@ typedef enum color_array color_array;
 void error_exit(char *);
 void invalid_input(void);
 void terminal_color(enum color_array);
-//void Map_output(char, int, int);
+void Map_output(char (*)[100], int, int);
 
 /* functions definitions */
 void error_exit(char *message) {
