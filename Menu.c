@@ -32,7 +32,6 @@ In this game we will show cells like this: \n\
 |           E           |  Exploded cell |\n\
 +-----------------------+----------------+\n\n\
 \
-** Anytime in the middle of the game, if you press m button, the menu will show up.**\n\n\
 "	);
 
 

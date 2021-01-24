@@ -9,6 +9,7 @@
 /* functions declrations */
 void Load(void);
 void Load_Last(void);
+void Save_game(Game *);
 
 /* functions definitions */
 void Load() {
@@ -17,4 +18,8 @@ void Load() {
 
 void Load_Last() {
 	printf("load last");
+}
+
+void Save_game(Game *current_game) {
+	printf("save game");
 }

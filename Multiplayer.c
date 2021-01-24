@@ -10,6 +10,7 @@
 User *Player1_User, *Player2_User;
 Linked_List *Player1_Ships, *Player2_Ships;
 Map *Player1_Map, *Player2_Map;
+Game *current_game;
 
 /* functions declrations */
 void Multiplayer(void);
@@ -24,7 +25,9 @@ Linked_List *Ships_manual_placement(char *);
 void Add_ships_to_map(char (*)[100], Linked_List *);
 void Start_multiplayer_game(int);
 void Player1_turn(void);
+void Player1_shoot(int, int);
 void Player2_turn(void);
+void Player2_shoot(int, int);
 
 /* functions definitions */
 void Multiplayer() {
@@ -76,8 +79,12 @@ User *Choose_from_avail() {
 	while (1) {
 		if (fread(user, sizeof(User), 1, user_file) < 1)
 			break;
-
-		printf("%d) %s\n", indx, user -> name);
+		
+		terminal_color(yellow);
+		printf("%d) ", indx);
+		terminal_color(blue);
+		printf("%s\n", user -> name);
+		terminal_color(white);
 		indx++;
 	}
 	fclose(user_file);
@@ -327,13 +334,14 @@ void Add_ships_to_map(char Tmp_map[100][100], Linked_List *ships) {
 }
 
 void Start_multiplayer_game(int turn) {
-	Game *current_game = (Game *)malloc(sizeof(Game));
+	current_game = (Game *)malloc(sizeof(Game));
 	current_game -> Player1_User = Player1_User;
 	current_game -> Player2_User = Player2_User;
 	current_game -> Player1_Ships = Player1_Ships;
 	current_game -> Player2_Ships = Player2_Ships;
 	current_game -> Player1_Map = Player1_Map;
 	current_game -> Player2_Map = Player2_Map;
+	current_game -> starting_time = time(0);
 	
 	int winner_player;
 	if (turn == 1) {
@@ -357,15 +365,46 @@ void Player1_turn() {
 	output_color_text(blue, " row No.");
 	printf(" and ");
 	output_color_text(blue, "column No.");
-	printf(" of the target cell: (Enter m to bring up main menu)\n");
+	printf(" of the target cell: (Enter s to save the game)\n");
 	
+	int x, y;
 	char input[10];
 	scanf(" %s", &input);
-	if (!strcmp("m", input)) {
-		// Game_menu();
+	if (!strcmp("s", input)) {
+		Save_game(current_game);
+		Player1_turn();
+		return;
 	}
+	x = string_to_int(input);
+	scanf(" %s", &input);
+	if (!strcmp("s", input)) {
+		Save_game(current_game);
+		Player1_turn();
+		return;
+	}
+	y = string_to_int(input);
+	
+	if (!is_valid(x, y, map_row, map_column)) {
+		invalid_input();
+		Player1_turn();
+		return;
+	}
+	Player1_shoot(x, y);
+}
+
+void Player1_shoot(int x, int y) {
+	if (Player2_Map -> known[x][y] == 'E') {
+		if (Player2_Map -> unkown[x][y] == ' ')
+			Player2_Map -> unkown[x][y] = 'W';
+		return;
+	}
+	
 }
 
 void Player2_turn() {
 
+}
+
+void Player2_shoot(int x, int y) {
+	
 }
