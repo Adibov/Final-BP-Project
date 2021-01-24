@@ -200,26 +200,8 @@ Linked_List *Ships_auto_placement() {
 		Ships -> cur = Ships -> cur -> nxt;
 	}
 
-	printf("Would you want to keep this placement? (y / n)\n");
-	for (int j = 0; j < map_column; j++)
-		printf("+---");
-	printf("+\n");
-	for (int i = 0; i < map_row; i++) {
-		for (int j = 0; j < map_column; j++) {
-			printf("| ");
-			if (Tmp_map[i][j] == 'S')
-				terminal_color(yellow);
-			else
-				terminal_color(gray);
-			printf("%c ", Tmp_map[i][j]);
-			terminal_color(white);
-		}
-		printf("|\n");
-
-		for (int j = 0; j < map_column; j++)
-		printf("+---");
-		printf("+\n");
-	}
+	printf("Would you want to keep this placement? (y / n)\n\n");
+	Map_output(Tmp_map, map_row, map_column);
 
 	char option;
 	scanf(" %c", &option);
@@ -234,5 +216,71 @@ Linked_List *Ships_auto_placement() {
 }
 
 Linked_List *Ships_manual_placement() {
+	system("CLS");
+	char Tmp_map[100][100];
+	for (int i = 0; i < 100; i++)
+		for (int j = 0; j < 100; j++)
+			Tmp_map[i][j] = 'E';
 
+	Linked_List *result = Linked_List_init();
+
+	Ships -> cur = Ships -> head -> nxt;
+	while (Ships -> cur != Ships -> head) {
+		Ship *current_ship = (Ship *)(Ships -> cur -> value);
+		int len = current_ship -> length;
+		bool placed = 0;
+
+		while (!placed) {
+			int i, j, direction;
+			system("CLS");
+			Map_output(Tmp_map, map_row, map_column);
+			printf("Where do you want to add a ship with length %d? (Consider upper leftmost cell of the ship, and enter row No. and column No. by order)\n", len);
+			scanf("%d%d", &i, &j);
+			i--, j--;
+			if (!is_valid(i, j, map_row, map_column)) {
+				invalid_input();
+				continue;
+			}
+
+			printf("\nNow enter the direction: (0 for vertical and 1 for horizontal)\n");
+			scanf("%d", &direction);
+			if (direction && direction != 1) {
+				invalid_input();
+				continue;
+			}
+			if (!check_placement(Tmp_map, i, j, len, direction, map_row, map_column)) {
+				system("CLS");
+				printf("Cannot place the ship here\nPress any key to continue.");
+				getch();
+				continue;
+			}
+
+			for (int k = 0; k < len; k++)
+				Tmp_map[i + k * dx[direction]][j + k * dy[direction]] = 'S';
+			placed = 1;
+
+			Ship *added_ship = (Ship *)malloc(sizeof(Ship));
+			added_ship -> length = len;
+			added_ship -> row = i;
+			added_ship -> column = j;
+			added_ship -> destroyed = 0;
+			added_ship -> direction = direction;
+			Linked_List_add(result, added_ship);
+		}
+		Ships -> cur = Ships -> cur -> nxt;
+	}
+
+	printf("Would you want to keep this placement? (y / n)\n\n");
+	Map_output(Tmp_map, map_row, map_column);
+
+	char option;
+	scanf(" %c", &option);
+	if (option == 'y')
+		return result;
+	else if (option == 'n')
+		return Ships_placement();
+	else {
+		invalid_input();
+		return Ships_placement();
+	}
 }

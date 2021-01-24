@@ -19,6 +19,7 @@ typedef enum color_array color_array;
 void error_exit(char *);
 void invalid_input(void);
 void terminal_color(enum color_array);
+//void Map_output(char, int, int);
 
 /* functions definitions */
 void error_exit(char *message) {
@@ -50,4 +51,32 @@ void terminal_color(enum color_array color) {
 14: Yellow
 15: White
 */
+}
+
+void Map_output(char Tmp_map[100][100], int n, int m) {
+	printf("   ");
+	for (int j = 0; j < m; j++)
+		printf("  %d ", j + 1);
+	printf("\n   ");
+
+	for (int j = 0; j < m; j++)
+		printf("+---");
+	printf("+\n");
+	for (int i = 0; i < n; i++) {
+		printf("%-3d", i + 1);
+		for (int j = 0; j < m; j++) {
+			printf("| ");
+			if (Tmp_map[i][j] == 'S')
+				terminal_color(yellow);
+			else
+				terminal_color(gray);
+			printf("%c ", Tmp_map[i][j]);
+			terminal_color(white);
+		}
+		printf("|\n   ");
+
+		for (int j = 0; j < m; j++)
+		printf("+---");
+		printf("+\n");
+	}
 }

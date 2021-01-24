@@ -29,7 +29,7 @@ bool is_valid(int, int, int, int);
 bool check_placement(char tmp_mp[100][100], int row, int column, int len, int direction, int num_row, int num_column) {
 	for (int k = 0; k < len; k++) {
 		int i = row + k * dx[direction], j = column + k * dy[direction];
-		if (tmp_mp[i][j] != 'E')
+		if (!is_valid(i, j, num_row, num_column) || tmp_mp[i][j] != 'E')
 			return 0;
 		
 		for (int dif_x = -1; dif_x < 2; dif_x++)
