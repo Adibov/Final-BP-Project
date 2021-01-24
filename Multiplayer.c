@@ -7,22 +7,22 @@
 #include "Solo_Player.c"
 
 /* Global variables */
-User Player1_User, Player2_User;
+User *Player1_User, *Player2_User;
 Linked_List *Player1_Ships, *Player2_Ships;
 Map *Player1_Map, *Player2_Map;
 
 /* functions declrations */
 void Multiplayer(void);
 void Multiplayer_menu(void);
-User Choose_user(char *);
-User Choose_from_avail(void);
-User New_user(void);
+User *Choose_user(char *);
+User *Choose_from_avail(void);
+User *New_user(void);
 void Choose_second_user(void);
 Linked_List *Ships_placement(char *);
 Linked_List *Ships_auto_placement(char *);
 Linked_List *Ships_manual_placement(char *);
 void Add_ships_to_map(char (*)[100], Linked_List *);
-void Start_multiplayer_game(void);
+void Start_multiplayer_game(int);
 void Player1_turn(void);
 void Player2_turn(void);
 
@@ -30,6 +30,7 @@ void Player2_turn(void);
 void Multiplayer() {
 	system("CLS");
 	Multiplayer_menu();
+	Start_multiplayer_game(1);
 }
 
 void Multiplayer_menu() {
@@ -42,10 +43,9 @@ void Multiplayer_menu() {
 	Player2_Map = Map_init();
 	Add_ships_to_map(Player1_Map -> known_map, Player1_Ships);
 	Add_ships_to_map(Player2_Map -> known_map, Player2_Ships);
-	Start_multiplayer_game();
 }
 
-User Choose_user(char *message) {
+User *Choose_user(char *message) {
 	printf("\
 %s\n\
 	Choose user:\n\
@@ -65,19 +65,19 @@ User Choose_user(char *message) {
 	}
 }
 
-User Choose_from_avail() {
+User *Choose_from_avail() {
 	system("CLS");
 	FILE *user_file = fopen("Files\\Users.bin", "rb");
 	if (user_file == NULL)
 		error_exit("Cannot fopen user_file");
 
-	User user;
+	User *user = (User *)malloc(sizeof(User));
 	int indx = 1;
 	while (1) {
-		if (fread(&user, sizeof(User), 1, user_file) < 1)
+		if (fread(user, sizeof(User), 1, user_file) < 1)
 			break;
 
-		printf("%d) %s\n", indx, user.name);
+		printf("%d) %s\n", indx, user -> name);
 		indx++;
 	}
 	fclose(user_file);
@@ -102,13 +102,13 @@ User Choose_from_avail() {
 	user_file = fopen("Files\\Users.bin", "rb");
 	if (fseek(user_file, (indx - 1) * sizeof(User), SEEK_SET))
 			error_exit("Cannot reach indx in user_file");
-	if (fread(&user, sizeof(User), 1, user_file) < 1)
+	if (fread(user, sizeof(User), 1, user_file) < 1)
 		error_exit("Cannot read User after changing SEEK_CUR");
 	fclose(user_file);
 	return user;
 }
 
-User New_user() {
+User *New_user() {
 	system("CLS");
 	char username[200];
 	printf("Enter a username with at most 50 characters: ");
@@ -125,12 +125,12 @@ User New_user() {
 		error_exit("Cannot fopen user_file");
 
 	bool does_exist = 0;
-	User user;
+	User *user = (User *)malloc(sizeof(User));
 	while (1) {
-		if (fread(&user, sizeof(User), 1, user_file) < 1)
+		if (fread(user, sizeof(User), 1, user_file) < 1)
 			break;
 
-		if (!strcmp(user.name, username))
+		if (!strcmp(user -> name, username))
 			does_exist = 1;
 	}
 	fclose(user_file);
@@ -146,19 +146,18 @@ User New_user() {
 	if (user_file == NULL)
 		error_exit("Cannot fopen user_file");
 	
-	User *new_user = malloc(sizeof(User));
-	new_user -> point = 0;
-	strcpy(new_user -> name, username);
-	fwrite(new_user, sizeof(User), 1, user_file);
+	user -> point = 0;
+	strcpy(user -> name, username);
+	fwrite(user, sizeof(User), 1, user_file);
 	fclose(user_file);
-	return *new_user;
+	return user;
 }
 
 void Choose_second_user() {
 	system("CLS");
 	while (1) {
 		Player2_User = Choose_user("Second player");
-		if (!strcmp(Player1_User.name, Player2_User.name)) {
+		if (!strcmp(Player1_User -> name, Player2_User -> name)) {
 			system("CLS");
 			printf("This user has been chosen\nPress any key to continue.");
 			getch();
@@ -327,22 +326,46 @@ void Add_ships_to_map(char Tmp_map[100][100], Linked_List *ships) {
 	}
 }
 
-void Start_multiplayer_game() {
-	int winner_player = 2;
-	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
-		Player1_turn();
-		if (Player2_Ships -> head -> nxt == Player2_Ships -> head) {
-			winner_player = 1;
-			break;
+void Start_multiplayer_game(int turn) {
+	Game *current_game = (Game *)malloc(sizeof(Game));
+	current_game -> Player1_User = Player1_User;
+	current_game -> Player2_User = Player2_User;
+	current_game -> Player1_Ships = Player1_Ships;
+	current_game -> Player2_Ships = Player2_Ships;
+	current_game -> Player1_Map = Player1_Map;
+	current_game -> Player2_Map = Player2_Map;
+	
+	int winner_player;
+	if (turn == 1) {
+		winner_player = 2;
+		while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
+			Player1_turn();
+			if (Player2_Ships -> head -> nxt == Player2_Ships -> head) {
+				winner_player = 1;
+				break;
+			}
+			Player2_turn();
 		}
-		Player2_turn();
 	}
 }
 
 void Player1_turn() {
-
+	system("CLS");
+	Map_output(Player2_Map -> unknown_map, map_row, map_column);
+	output_color_text(red, "\nFirst player turn\n");
+	printf("Enter ");
+	output_color_text(blue, " row No.");
+	printf(" and ");
+	output_color_text(blue, "column No.");
+	printf(" of the target cell: (Enter m to bring up main menu)\n");
+	
+	char input[10];
+	scanf(" %s", &input);
+	if (!strcmp("m", input)) {
+		// Game_menu();
+	}
 }
 
 void Player2_turn() {
-	
+
 }

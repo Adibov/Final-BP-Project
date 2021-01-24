@@ -5,7 +5,7 @@
 #include <assert.h>
 #include <conio.h>
 #include <windows.h>
-#include "User.c"
+#include "Game.c"
 
 #define DEBUG
 
@@ -19,7 +19,9 @@ typedef enum color_array color_array;
 void error_exit(char *);
 void invalid_input(void);
 void terminal_color(enum color_array);
+void output_color_text(enum color_array, char *);
 void Map_output(char (*)[100], int, int);
+int string_to_int(char *);
 
 /* functions definitions */
 void error_exit(char *message) {
@@ -36,7 +38,6 @@ void invalid_input() {
 	getch();
 }
 
-
 void terminal_color(enum color_array color) {
 	HANDLE Console;
 	Console = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -51,6 +52,12 @@ void terminal_color(enum color_array color) {
 14: Yellow
 15: White
 */
+}
+
+void output_color_text(enum color_array color, char *message) {
+	terminal_color(color);
+	printf("%s", message);
+	terminal_color(white);
 }
 
 void Map_output(char Tmp_map[100][100], int n, int m) {
@@ -79,4 +86,11 @@ void Map_output(char Tmp_map[100][100], int n, int m) {
 		printf("+---");
 		printf("+\n");
 	}
+}
+
+int string_to_int(char *string) {
+	int res = 0;
+	for (int i = 0; i < strlen(string); i++)
+		res = 10 * res + (int)(string[i] - '0');
+	return res;
 }

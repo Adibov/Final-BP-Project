@@ -29,18 +29,13 @@ void check_files() {
 		closedir(dir);
 	else if (ENOENT == errno) /* Directory does not exist. */
 		system("mkdir .\\Files");
-	else {
-		/* opendir() failed for some other reason. */
-		system("CLS");
-		printf("Some error occurred :(");
-		#ifdef DEBUG
-			printf("opendir() failed for some other reason");
-		#endif
-		exit(-1);
-	}
+	else /* opendir() failed for some other reason. */
+		error_exit("opendir() failed for some other reason");
 }
 
 void check_binary_files() {
 	if (access("Files\\Users.bin", F_OK)) // file doesn't exists
 		system("touch Files\\Users.bin");
+	if (access("Files\\Loads.bin", F_OK))
+		system("touch Files\\Loads.bin");
 }
