@@ -4,3 +4,4 @@
 • Autosave option
 • Delete a user profile
 • Colorful texts
+• Sound Effects

@@ -19,7 +19,7 @@ void init() {
 	terminal_color(white);
 	check_files();
 	check_binary_files();
-
+	setting_init();
 }
 
 

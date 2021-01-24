@@ -81,11 +81,10 @@ User Choose_from_avail() {
 	}
 
 	user_file = fopen("Files\\Users.bin", "rb");
-	while (indx--) {
-		if (fread(&user, sizeof(User), 1, user_file) < 1)
+	if (fseek(user_file, (indx - 1) * sizeof(User), SEEK_SET))
 			error_exit("Cannot reach indx in user_file");
-		fread(&user, sizeof(User), 1, user_file);
-	}
+	if (fread(&user, sizeof(User), 1, user_file) < 1)
+		error_exit("Cannot read User after changing SEEK_CUR");
 	fclose(user_file);
 	return user;
 }
