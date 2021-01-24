@@ -14,12 +14,12 @@ Map *Player1_Map, *Player2_Map;
 /* functions declrations */
 void Multiplayer(void);
 void Multiplayer_menu(void);
-User Choose_user(void);
+User Choose_user(char *);
 User Choose_from_avail(void);
 User New_user(void);
-Linked_List *Ships_placement(void);
-Linked_List *Ships_auto_placement(void);
-Linked_List *Ships_manual_placement(void);
+Linked_List *Ships_placement(char *);
+Linked_List *Ships_auto_placement(char *);
+Linked_List *Ships_manual_placement(char *);
 
 /* functions definitions */
 void Multiplayer() {
@@ -29,18 +29,30 @@ void Multiplayer() {
 
 void Multiplayer_menu() {
 	system("CLS");
-	Player1_User = Choose_user();
-	Player1_Ships = Ships_placement();
-	// User Player2_User = Choose_user();
+	Player1_User = Choose_user("First player");
+	Player1_Ships = Ships_placement("First player");
+	system("CLS");
+	while (1) {
+		Player2_User = Choose_user("Second player");
+		if (!strcmp(Player1_User.name, Player2_User.name)) {
+			system("CLS");
+			printf("This user has been chosen\nPress any key to continue.");
+			getch();
+			system("CLS");
+			continue;
+		}
+		break;
+	}
+	Player2_Ships = Ships_placement("Second player");
 }
 
-User Choose_user() {
+User Choose_user(char *message) {
 	printf("\
-First player\n\
+%s\n\
 	Choose user:\n\
 		1) Choose from available users\n\
 		2) New user\n\
-"	);
+",	message);
 
 	int option;
 	scanf("%d", &option);
@@ -50,7 +62,7 @@ First player\n\
 		return New_user();
 	else {
 		invalid_input();
-		Multiplayer_menu();
+		return Choose_user(message);
 	}
 }
 
@@ -139,30 +151,32 @@ User New_user() {
 	new_user -> point = 0;
 	strcpy(new_user -> name, username);
 	fwrite(new_user, sizeof(User), 1, user_file);
+	fclose(user_file);
+	return *new_user;
 }
 
-Linked_List *Ships_placement() {
+Linked_List *Ships_placement(char *message) {
 		system("CLS");
 		printf("\
-First player\n\
+%s\n\
 	Ships placement:\n\
 		1) Auto\n\
 		2) Manual\n\
-"	);
+",	message);
 
 	int option;
 	scanf("%d", &option);
 	if (option == 1)
-		return Ships_auto_placement();
+		return Ships_auto_placement(message);
 	else if (option == 2)
-		return Ships_manual_placement();
+		return Ships_manual_placement(message);
 	else {
 		invalid_input();
-		return Ships_placement();
+		return Ships_placement(message);
 	}
 }
 
-Linked_List *Ships_auto_placement() {
+Linked_List *Ships_auto_placement(char *message) {
 	system("CLS");
 	srand(time(0));
 	char Tmp_map[100][100];
@@ -208,14 +222,14 @@ Linked_List *Ships_auto_placement() {
 	if (option == 'y')
 		return result;
 	else if (option == 'n')
-		return Ships_auto_placement();
+		return Ships_auto_placement(message);
 	else {
 		invalid_input();
-		return Ships_placement();
+		return Ships_placement(message);
 	}
 }
 
-Linked_List *Ships_manual_placement() {
+Linked_List *Ships_manual_placement(char *message) {
 	system("CLS");
 	char Tmp_map[100][100];
 	for (int i = 0; i < 100; i++)
@@ -278,9 +292,9 @@ Linked_List *Ships_manual_placement() {
 	if (option == 'y')
 		return result;
 	else if (option == 'n')
-		return Ships_placement();
+		return Ships_placement(message);
 	else {
 		invalid_input();
-		return Ships_placement();
+		return Ships_placement(message);
 	}
 }

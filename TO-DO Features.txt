@@ -5,3 +5,4 @@
 • Delete a user profile
 • Colorful texts
 • Sound Effects
+• Delete existing users
