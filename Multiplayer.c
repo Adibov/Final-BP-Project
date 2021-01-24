@@ -182,7 +182,7 @@ Linked_List *Ships_auto_placement() {
 			for (int i = 0; i < map_row; i++)
 				for (int j = 0; j < map_column && !placed; j++) {
 					int direction = (rand() & 1);
-					if (rand() % 2 && check_placement(Tmp_map, i, j, len, direction, map_row, map_column)) {
+					if (!(rand() % 3) && check_placement(Tmp_map, i, j, len, direction, map_row, map_column)) {
 						for (int k = 0; k < len; k++)
 							Tmp_map[i + k * dx[direction]][j + k * dy[direction]] = 'S';
 						placed = 1;
@@ -198,12 +198,6 @@ Linked_List *Ships_auto_placement() {
 				}
 		}
 		Ships -> cur = Ships -> cur -> nxt;
-		// printf("hey:\n");
-		// for (int i = 0; i < 10; i++) {
-		// 	for (int j = 0; j < 10; j++)
-		// 		printf("%c ", Tmp_map[i][j]);
-		// 	printf("\n");
-		// }
 	}
 
 	printf("Would you want to keep this placement? (y / n)\n");
@@ -214,9 +208,9 @@ Linked_List *Ships_auto_placement() {
 		for (int j = 0; j < map_column; j++) {
 			printf("| ");
 			if (Tmp_map[i][j] == 'S')
-				terminal_color(blue);
+				terminal_color(yellow);
 			else
-				terminal_color(green);
+				terminal_color(gray);
 			printf("%c ", Tmp_map[i][j]);
 			terminal_color(white);
 		}
