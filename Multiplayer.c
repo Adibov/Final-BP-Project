@@ -12,6 +12,9 @@ void Multiplayer_menu(void);
 User Choose_user(void);
 User Choose_from_avail(void);
 User New_user(void);
+Linked_List *Ships_placement(void);
+Linked_List *Ships_auto_placement(void);
+Linked_List *Ships_manual_placement(void);
 
 /* functions definitions */
 void Multiplayer() {
@@ -21,9 +24,9 @@ void Multiplayer() {
 
 void Multiplayer_menu() {
 	system("CLS");
-	User Player1 = Choose_user();
-	
-	// User Player2 = Choose_user();
+	User Player1_User = Choose_user();
+	Linked_List *Player1_Ships = Choose_ships();
+	// User Player2_User = Choose_user();
 }
 
 User Choose_user() {
@@ -131,4 +134,33 @@ User New_user() {
 	new_user -> point = 0;
 	strcpy(new_user -> name, username);
 	fwrite(new_user, sizeof(User), 1, user_file);
+}
+
+Linked_List *Ships_placement() {
+		system("CLS");
+		printf("\
+First player\n\
+	Ships placement:\n\
+		1) Auto\n\
+		2) Manual\n\
+"	);
+
+	int option;
+	scanf("%d", &option);
+	if (option == 1)
+		return Ships_auto_placement();
+	else if (option == 2)
+		return Ships_manual_placement();
+	else {
+		invalid_input();
+		return Ships_placement();
+	}
+}
+
+Linked_List *Ships_auto_placement() {
+	
+}
+
+Linked_List *Ships_manual_placement() {
+
 }
