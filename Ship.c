@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
-#include "linked_list.c"
+#include "Map.c"
 
 /* Global variables */
 enum Direction {vertical, horizontal};

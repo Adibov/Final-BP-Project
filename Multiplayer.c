@@ -6,6 +6,11 @@
 #include <conio.h>
 #include "Solo_Player.c"
 
+/* Global variables */
+User Player1_User, Player2_User;
+Linked_List *Player1_Ships, *Player2_Ships;
+Map *Player1_Map, *Player2_Map;
+
 /* functions declrations */
 void Multiplayer(void);
 void Multiplayer_menu(void);
@@ -24,8 +29,8 @@ void Multiplayer() {
 
 void Multiplayer_menu() {
 	system("CLS");
-	User Player1_User = Choose_user();
-	Linked_List *Player1_Ships = Choose_ships();
+	Player1_User = Choose_user();
+	Player1_Ships = Ships_placement();
 	// User Player2_User = Choose_user();
 }
 
