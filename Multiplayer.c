@@ -23,7 +23,7 @@ Linked_List *Ships_placement(char *);
 Linked_List *Ships_auto_placement(char *);
 Linked_List *Ships_manual_placement(char *);
 void Add_ships_to_map(char (*)[100], Linked_List *);
-void Start_multiplayer_game(int);
+void Start_multiplayer_game(bool);
 void Player1_turn(void);
 void Player1_shoot(int, int);
 void Player2_turn(void);
@@ -334,33 +334,31 @@ void Add_ships_to_map(char Tmp_map[100][100], Linked_List *ships) {
 	}
 }
 
-void Start_multiplayer_game(int turn) {
-	current_game = (Game *)malloc(sizeof(Game));
-	current_game -> Player1_User = Player1_User;
-	current_game -> Player2_User = Player2_User;
-	current_game -> Player1_Ships = Player1_Ships;
-	current_game -> Player2_Ships = Player2_Ships;
-	current_game -> Player1_Map = Player1_Map;
-	current_game -> Player2_Map = Player2_Map;
-	current_game -> mode = 2;
-	current_game -> turn = turn;
-	current_game -> player1_point = 0;
-	current_game -> player2_point = 0;
-	current_game -> starting_time = time(0);
-
-	int winner_player;
-	if (turn == 1) {
-		winner_player = 2;
-		while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
-			Player1_turn();
-			current_game -> turn = turn = 3 - turn;
-			if (Player2_Ships -> head -> nxt == Player2_Ships -> head) {
-				winner_player = 1;
-				break;
-			}
-			Player2_turn();
-		}
+void Start_multiplayer_game(bool new_game) {
+	if (new_game) {
+		current_game = (Game *)malloc(sizeof(Game));
+		current_game -> Player1_User = Player1_User;
+		current_game -> Player2_User = Player2_User;
+		current_game -> Player1_Ships = Player1_Ships;
+		current_game -> Player2_Ships = Player2_Ships;
+		current_game -> Player1_Map = Player1_Map;
+		current_game -> Player2_Map = Player2_Map;
+		current_game -> mode = 2;
+		current_game -> turn = 1;
+		current_game -> player1_point = 0;
+		current_game -> player2_point = 0;
+		current_game -> starting_time = time(0);
 	}
+
+	int winner_player = 2;
+	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
+		if (current_game -> turn == 1)
+			Player1_turn();
+		else
+			Player2_turn();
+	}
+	if (Player2_Ships -> head -> nxt == Player2_Ships -> head)
+		winner_player = 1;
 }
 
 void Player1_turn() {
@@ -406,8 +404,10 @@ void Player1_turn() {
 }
 
 void Player1_shoot(int x, int y) {
+	current_game -> turn = 1;
 	if (Player2_Map -> known_map[x][y] == 'E') {
 		Player2_Map -> unknown_map[x][y] = 'W';
+		current_game -> turn = 2;
 		return;
 	}
 	Player2_Map -> unknown_map[x][y] = 'X';
@@ -448,11 +448,89 @@ void Player1_shoot(int x, int y) {
 }
 
 void Player2_turn() {
-
+	system("CLS");
+	Map_output(Player1_Map -> unknown_map, map_row, map_column);
+	output_color_text(red, "\nSecond player turn\n");
+	printf("Enter ");
+	output_color_text(blue, " row No.");
+	printf(" and ");
+	output_color_text(blue, "column No.");
+	printf(" of the target cell: (Enter s to save the game)\n");
+	
+	int x, y;
+	char input[10];
+	scanf(" %s", &input);
+	if (!strcmp("s", input)) {
+		Save_game(current_game);
+		Player2_turn();
+		return;
+	}
+	x = string_to_int(input);
+	scanf(" %s", &input);
+	if (!strcmp("s", input)) {
+		Save_game(current_game);
+		Player2_turn();
+		return;
+	}
+	y = string_to_int(input);
+	x--, y--;
+	if (!is_valid(x, y, map_row, map_column)) {
+		invalid_input();
+		Player2_turn();
+		return;
+	}
+	if (Player1_Map -> unknown_map[x][y] != ' ') {
+		system("CLS");
+		printf("You have hit this cell before\nPress any key to continue.");
+		getch();
+		Player2_turn();
+		return;
+	}
+	Player2_shoot(x, y);
 }
 
 void Player2_shoot(int x, int y) {
-	
+	current_game -> turn = 2;
+	if (Player1_Map -> known_map[x][y] == 'E') {
+		Player1_Map -> unknown_map[x][y] = 'W';
+		current_game -> turn = 1;
+		return;
+	}
+	Player1_Map -> unknown_map[x][y] = 'X';
+	current_game -> player2_point++;
+
+	Ship *exploded_ship;
+	Player1_Ships -> cur = Player1_Ships -> head -> nxt;
+	while (Player1_Ships -> cur != Player1_Ships -> head) {
+		bool finded = 0;
+		Ship *current_ship = Player1_Ships -> cur -> value;
+		int len = current_ship -> length;
+		for (int k = 0; k < len; k++) {
+			int i = current_ship -> row + k * dx[current_ship -> direction], j = current_ship -> column + k * dy[current_ship -> direction];
+			if (i == x && j == y) {
+				exploded_ship = current_ship;
+				finded = 1;
+				break;
+			}
+		}
+		if (finded)
+			break;
+		Player1_Ships -> cur = Player1_Ships -> cur -> nxt;
+	}
+	if (exploded_ship == NULL)
+		error_exit("Cannot find the exploded ship");
+
+	int len = exploded_ship -> length, direction = exploded_ship -> direction;
+	bool is_destroyed = 1;
+	for (int k = 0; k < len; k++) {
+		int i = exploded_ship -> row + k * dx[direction], j = exploded_ship -> column + k * dy[direction];
+		if (Player1_Map -> unknown_map[i][j] != 'X')
+			is_destroyed = 0;
+	}
+	if (is_destroyed) {
+		destroy_ship(exploded_ship, Player1_Map -> unknown_map);
+		Linked_List_del(Player1_Ships);
+	}
 }
 
 void destroy_ship(Ship *current_ship, char current_map[100][100]) {
