@@ -13,6 +13,7 @@ Linked_List *Ships;
 /* functions declrations */
 void Setting(void);
 void setting_init(void);
+int get_largest_ship_length(void);
 
 /* functions definitions */
 void Setting() {
@@ -29,4 +30,16 @@ void setting_init() {
 		ship -> length = initial_ships[i];
 		Linked_List_add(Ships, ship);
 	}
+}
+
+int get_largest_ship_length() {
+	int res = 0;
+	Ships -> cur = Ships -> head -> nxt;
+	while (Ships -> cur != Ships -> head) {
+		Ship *tmp = (Ship *)Ships -> cur -> value;
+		if (tmp -> length > res)
+			res = tmp -> length;
+		Ships -> cur = Ships -> cur -> nxt;
+	}
+	return res;
 }

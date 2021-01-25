@@ -10,7 +10,7 @@
 #define DEBUG
 
 /* Global variables */
-enum color_array {gray = 8, blue, green, cyan, red, pink, yellow, white};
+enum color_array {light_blue = 1, light_green, light_cyan, light_red, light_pink, light_yellow, light_white, gray, blue, green, cyan, red, pink, yellow, white};
 
 /* Typedefs */
 typedef enum color_array color_array;
@@ -75,6 +75,12 @@ void Map_output(char Tmp_map[100][100], int n, int m) {
 			printf("| ");
 			if (Tmp_map[i][j] == 'S')
 				terminal_color(yellow);
+			else if (Tmp_map[i][j] == 'W')
+				terminal_color(light_blue);
+			// else if (Tmp_map[i][j] == 'E')
+			// 	terminal_color(red);
+			else if (Tmp_map[i][j] == 'D')
+				terminal_color(light_red);
 			else
 				terminal_color(gray);
 			printf("%c ", Tmp_map[i][j]);

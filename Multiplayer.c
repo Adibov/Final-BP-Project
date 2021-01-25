@@ -28,6 +28,7 @@ void Player1_turn(void);
 void Player1_shoot(int, int);
 void Player2_turn(void);
 void Player2_shoot(int, int);
+void destroy_ship(Ship *, char (*)[]);
 
 /* functions definitions */
 void Multiplayer() {
@@ -341,13 +342,18 @@ void Start_multiplayer_game(int turn) {
 	current_game -> Player2_Ships = Player2_Ships;
 	current_game -> Player1_Map = Player1_Map;
 	current_game -> Player2_Map = Player2_Map;
+	current_game -> mode = 2;
+	current_game -> turn = turn;
+	current_game -> player1_point = 0;
+	current_game -> player2_point = 0;
 	current_game -> starting_time = time(0);
-	
+
 	int winner_player;
 	if (turn == 1) {
 		winner_player = 2;
 		while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
 			Player1_turn();
+			current_game -> turn = turn = 3 - turn;
 			if (Player2_Ships -> head -> nxt == Player2_Ships -> head) {
 				winner_player = 1;
 				break;
@@ -383,7 +389,7 @@ void Player1_turn() {
 		return;
 	}
 	y = string_to_int(input);
-	
+	x--, y--;
 	if (!is_valid(x, y, map_row, map_column)) {
 		invalid_input();
 		Player1_turn();
@@ -393,12 +399,45 @@ void Player1_turn() {
 }
 
 void Player1_shoot(int x, int y) {
-	if (Player2_Map -> known[x][y] == 'E') {
-		if (Player2_Map -> unkown[x][y] == ' ')
-			Player2_Map -> unkown[x][y] = 'W';
+	if (Player2_Map -> known_map[x][y] == 'E') {
+		Player2_Map -> unknown_map[x][y] = 'W';
 		return;
 	}
-	
+	Player2_Map -> unknown_map[x][y] = 'E';
+	current_game -> player1_point++;
+
+	Ship *exploded_ship;
+	Player2_Ships -> cur = Player2_Ships -> head -> nxt;
+	while (Player2_Ships -> cur != Player2_Ships -> head) {
+		bool finded = 0;
+		Ship *current_ship = Player2_Ships -> cur -> value;
+		int len = current_ship -> length;
+		for (int k = 0; k < len; k++) {
+			int i = current_ship -> row + k * dx[current_ship -> direction], j = current_ship -> column + k * dy[current_ship -> direction];
+			if (i == x && j == y) {
+				exploded_ship = current_ship;
+				finded = 1;
+				break;
+			}
+		}
+		if (finded)
+			break;
+		Player2_Ships -> cur = Player2_Ships -> cur -> nxt;
+	}
+	if (exploded_ship == NULL)
+		error_exit("Cannot find the exploded ship");
+
+	int len = exploded_ship -> length, direction = exploded_ship -> direction;
+	bool is_destroyed = 1;
+	for (int k = 0; k < len; k++) {
+		int i = exploded_ship -> row + k * dx[direction], j = exploded_ship -> column + k * dy[direction];
+		if (Player2_Map -> unknown_map[i][j] != 'E')
+			is_destroyed = 0;
+	}
+	if (is_destroyed) {
+		destroy_ship(exploded_ship, Player2_Map -> unknown_map);
+		Linked_List_del(Player2_Ships);
+	}
 }
 
 void Player2_turn() {
@@ -407,4 +446,19 @@ void Player2_turn() {
 
 void Player2_shoot(int x, int y) {
 	
+}
+
+void destroy_ship(Ship *current_ship, char current_map[100][100]) {
+	int len = current_ship -> length, direction = current_ship -> direction;
+	for (int k = 0; k < len; k++) {
+		int i = current_ship -> row + k * dx[direction], j = current_ship -> column + k * dy[direction];
+		current_map[i][j] = 'D';
+		for (int _dx_ = -1; _dx_ < 2; _dx_++)
+			for (int _dy_ = -1; _dy_ < 2; _dy_++) {
+				int x = i + _dx_, y = j + _dy_;
+				if (is_valid(x, y, map_row, map_column) && current_map[x][y] == ' ')
+					current_map[x][y] = 'W';
+			}
+	}
+	current_ship -> destroyed = 1;
 }
