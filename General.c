@@ -77,8 +77,8 @@ void Map_output(char Tmp_map[100][100], int n, int m) {
 				terminal_color(yellow);
 			else if (Tmp_map[i][j] == 'W')
 				terminal_color(light_blue);
-			// else if (Tmp_map[i][j] == 'E')
-			// 	terminal_color(red);
+			else if (Tmp_map[i][j] == 'X')
+				terminal_color(red);
 			else if (Tmp_map[i][j] == 'D')
 				terminal_color(light_red);
 			else

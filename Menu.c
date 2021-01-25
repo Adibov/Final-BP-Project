@@ -29,7 +29,7 @@ In this game we will show cells like this: \n\
 +-----------------------+----------------+\n\
 |           D           | Destroyed ship |\n\
 +-----------------------+----------------+\n\
-|           E           |  Exploded cell |\n\
+|           X           |  Exploded cell |\n\
 +-----------------------+----------------+\n\n\
 \
 "	);

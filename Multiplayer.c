@@ -395,6 +395,13 @@ void Player1_turn() {
 		Player1_turn();
 		return;
 	}
+	if (Player2_Map -> unknown_map[x][y] != ' ') {
+		system("CLS");
+		printf("You have hit this cell before\nPress any key to continue.");
+		getch();
+		Player1_turn();
+		return;
+	}
 	Player1_shoot(x, y);
 }
 
@@ -403,7 +410,7 @@ void Player1_shoot(int x, int y) {
 		Player2_Map -> unknown_map[x][y] = 'W';
 		return;
 	}
-	Player2_Map -> unknown_map[x][y] = 'E';
+	Player2_Map -> unknown_map[x][y] = 'X';
 	current_game -> player1_point++;
 
 	Ship *exploded_ship;
@@ -431,7 +438,7 @@ void Player1_shoot(int x, int y) {
 	bool is_destroyed = 1;
 	for (int k = 0; k < len; k++) {
 		int i = exploded_ship -> row + k * dx[direction], j = exploded_ship -> column + k * dy[direction];
-		if (Player2_Map -> unknown_map[i][j] != 'E')
+		if (Player2_Map -> unknown_map[i][j] != 'X')
 			is_destroyed = 0;
 	}
 	if (is_destroyed) {
