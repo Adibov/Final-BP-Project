@@ -42,27 +42,36 @@ In this game we will show cells like this: \n\
 
 void main_menu() {
 	system("CLS");
-	printf(
-"\
-1) Play with a Friend\n\
-2) Play with Computer\n\
-3) Load a saved game\n\
-4) Load last game\n\
-5) Settings\n\
-6) Score Board\n\
-7) Exit\n\n\
-"	);
+	char *input_list[] = {"Play with a Friend", "Play with Computer", "Load a saved game", "Load last game", "Settings", "Score Board", "Exit"};
+	for (int i = 0; i < 7; i++) {
+		terminal_color(yellow);
+		printf("%d) ", i + 1);
+		terminal_color(white);
+		printf("%s\n", input_list[i]);
+	}
 
+	char input[100];
 	int option;
-	printf("Choose an option: ");
-	scanf("%d", &option);
+	output_color_text(light_red, "Choose an option: ");
+	scanf(" %s", &input);
+	if (input[0] < '1' || '7' < input[0]) {
+		invalid_input();
+		main_menu();
+		return;
+	}
+	option = (int)(input[0] - '0');
 	system("CLS");
 	if (option == 1)
 		Multiplayer();
 	else if (option == 2)
 		Solo_Player();
-	else if (option == 3)
-		Load();
+	else if (option == 3) {
+		current_game = Load();
+		if (current_game == NULL)
+			main_menu();
+		else
+			Start_multiplayer_game(0);
+	}
 	else if (option == 4) {
 		current_game = Load_Last();
 		if (current_game == NULL)
@@ -77,8 +86,7 @@ void main_menu() {
 	else if (option == 7)
 		Exit();
 	else {
-		printf("Invalid input, Press any key to continue.");
-		getch();
+		invalid_input();
 		main_menu();
 	}
 }

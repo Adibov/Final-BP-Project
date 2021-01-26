@@ -10,12 +10,62 @@
 /* functions declrations */
 Game *Load(void);
 Game *Load_Last(void);
+Game *Read_Game_from_file(char *, int);
+void Write_Game_to_file(Game *, char *, char *);
 void Save_game(Game *);
 void Save_Last(Game *);
 
 /* functions definitions */
 Game *Load() {
-	printf("load");
+	system("CLS");
+	if (Read_Game_from_file("Files\\Loads.bin", 1) == NULL) {
+		printf("There isn't any saved game yet\nPress any key to continue.");
+		getch();
+		return NULL;
+	}
+
+	int indx = 1, indx_input;
+	while (1) {
+		Game *input = Read_Game_from_file("Files\\Loads.bin", indx);
+		if (input == NULL)
+			break;
+		terminal_color(yellow);
+		printf("%d) ", indx);
+		terminal_color(white);
+		if (input -> mode == 1) {
+			terminal_color(cyan);
+			printf("%s", input -> Player1_User -> name);
+			terminal_color(white);
+			printf("'s Solo Player game, started in ");
+			terminal_color(cyan);
+			printf("%d\n", input -> starting_time);
+			terminal_color(white);
+		}
+		else {
+			terminal_color(cyan);
+			printf("%s ", input -> Player1_User -> name);
+			terminal_color(white);
+			printf("and ");
+			terminal_color(cyan);
+			printf("%s", input -> Player2_User -> name);
+			terminal_color(white);
+			printf("'s Multiplayer game, started in ");
+			terminal_color(cyan);
+			printf("%d\n", input -> starting_time);
+			terminal_color(white);
+		}
+		indx++;
+	}
+	output_color_text(light_red, "\nEnter the id of the saved game that you want to choose (or enter 0 to bring up main menu): ");
+	scanf("%d", &indx_input);
+
+	if (indx_input < 0 || indx_input >= indx) {
+		invalid_input();
+		return Load();
+	}
+	if (!indx_input)
+		return NULL;
+	return Read_Game_from_file("Files\\Loads.bin", indx_input);
 }
 
 Game *Load_Last() {
@@ -25,140 +75,65 @@ Game *Load_Last() {
 		getch();
 		return NULL;
 	}
-	Game *result = (Game *)malloc(sizeof(Game));
-	FILE *Last_Save_file = fopen("Files\\Last_Save.bin", "rb");
-	if (Last_Save_file == NULL)
-		error_exit("Cannot open Last_Save.bin");
-	fread(result, sizeof(Game), 1, Last_Save_file);
-	result -> Player1_User = (User *)malloc(sizeof(User));
-	result -> Player2_User = (User *)malloc(sizeof(User));
-	result -> Player1_Map = (Map *)malloc(sizeof(Map));
-	result -> Player2_Map = (Map *)malloc(sizeof(Map));
-	result -> Player1_Ships = Linked_List_init();
-	result -> Player2_Ships = Linked_List_init();
-	fread(result -> Player1_User -> name, sizeof(char), user_name_length, Last_Save_file);
-	fread(result -> Player2_User -> name, sizeof(char), user_name_length, Last_Save_file);
-	for (int i = 0; i < map_max_size; i++)
-		fread(result -> Player1_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
-	for (int i = 0; i < map_max_size; i++)
-		fread(result -> Player1_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
-	for (int i = 0; i < map_max_size; i++)
-		fread(result -> Player2_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
-	for (int i = 0; i < map_max_size; i++)
-		fread(result -> Player2_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
-	
-	int sz1, sz2;
-	fread(&sz1, sizeof(int), 1, Last_Save_file);
-	while (sz1--) {
-		Ship *tmp_ship = (Ship *)malloc(sizeof(Ship));
-		fread(tmp_ship, sizeof(Ship), 1, Last_Save_file);
-		Linked_List_add(result -> Player1_Ships, tmp_ship);
-	}
-
-	fread(&sz2, sizeof(int), 1, Last_Save_file);
-	while (sz2--) {
-		Ship *tmp_ship = (Ship *)malloc(sizeof(Ship));
-		fread(tmp_ship, sizeof(Ship), 1, Last_Save_file);
-		Linked_List_add(result -> Player2_Ships, tmp_ship);
-	}
-	fclose(Last_Save_file);
-
-	
+	Game *result = Read_Game_from_file("Files\\Last_Save.bin", 1);
 	map_row = result -> map_row;
 	map_column = result -> map_column;
 	return result;
 }
 
-void Save_game(Game *current_game) {
-	system("CLS");
-	if (!access("Files\\Tmp.bin", F_OK))
-		system("del Files\\Tmp.bin");
-	system("touch Files\\Tmp.bin");
+Game *Read_Game_from_file(char *path, int indx) {
+	Game *result = (Game *)malloc(sizeof(Game));
+	FILE *Last_Save_file = fopen(path, "rb");
+	if (Last_Save_file == NULL)
+		error_exit("Cannot open file with the given path");
+	
+	while (indx--) {
+		if (fread(result, sizeof(Game), 1, Last_Save_file) < 1)
+			return NULL;
 
-	bool finded = 0;
-	int indx = 0;
-	FILE *Loads = fopen("Files\\Loads.bin", "rb"), *Tmp;
-	if (Loads == NULL)
-		error_exit("Cannot fopen Loads.bin");
+		result -> Player1_User = (User *)malloc(sizeof(User));
+		result -> Player2_User = (User *)malloc(sizeof(User));
+		result -> Player1_Map = (Map *)malloc(sizeof(Map));
+		result -> Player2_Map = (Map *)malloc(sizeof(Map));
+		result -> Player1_Ships = Linked_List_init();
+		result -> Player2_Ships = Linked_List_init();
+		fread(result -> Player1_User -> name, sizeof(char), user_name_length, Last_Save_file);
+		fread(result -> Player2_User -> name, sizeof(char), user_name_length, Last_Save_file);
+		for (int i = 0; i < map_max_size; i++)
+			fread(result -> Player1_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
+		for (int i = 0; i < map_max_size; i++)
+			fread(result -> Player1_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
+		for (int i = 0; i < map_max_size; i++)
+			fread(result -> Player2_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
+		for (int i = 0; i < map_max_size; i++)
+			fread(result -> Player2_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
 		
-	while (1) {
-		Game *input = (Game *)malloc(sizeof(Game));
-		if (fread(input, sizeof(Game), 1, Loads) < 1)
-			break;
-		
-		if (input -> starting_time == current_game -> starting_time) {
-			finded = 1;
-			break;
-		}
-		indx++;
-	}
-
-	if (!finded) {
-		system("del Files\\Tmp.bin");
-		fseek(Loads, 0, SEEK_END);
-		fclose(Loads);
-
-		Loads = fopen("Files\\Loads.bin", "ab");
-		if (Loads == NULL)
-			error_exit("Cannot fopen Loads.bin");
-
-		fwrite(current_game, sizeof(Game), 1, Loads);
-		output_color_text(yellow, "Game saved\n");
-		printf("Press any key to continue.");
-		getch();
-		fclose(Loads);
-		return;
-	}
-
-	Tmp = fopen("Files\\Tmp.bin", "wb");
-	fseek(Loads, 0, SEEK_SET);
-	while (1) {
-		Game *input;
-		if (fread(input, sizeof(Game), 1, Loads) < 1)
-			break;
-		
-		if (input -> starting_time == current_game -> starting_time)
-			continue;
-		fwrite(input, sizeof(Game), 1, Tmp);
-	}
-	fclose(Loads);
-	fclose(Tmp);
-	system("del Files\\Loads.bin");
-	system("touch Files\\Loads.bin");
-
-	int second_indx = 0;
-	Loads = fopen("Files\\Loads.bin", "wb");
-	Tmp = fopen("Files\\Tmp.bin", "rb");
-	fseek(Tmp, 0, SEEK_SET);
-	while (1) {
-		if (indx == second_indx) {
-			fwrite(current_game, sizeof(Game), 1, Loads);
-			second_indx++;
-			continue;
+		int sz1, sz2;
+		fread(&sz1, sizeof(int), 1, Last_Save_file);
+		while (sz1--) {
+			Ship *tmp_ship = (Ship *)malloc(sizeof(Ship));
+			fread(tmp_ship, sizeof(Ship), 1, Last_Save_file);
+			Linked_List_add(result -> Player1_Ships, tmp_ship);
 		}
 
-		Game *input;
-		if (fread(input, sizeof(Game), 1, Tmp) < 1)
-			break;
-		fwrite(input, sizeof(Game), 1, Loads);
-		second_indx++;
+		fread(&sz2, sizeof(int), 1, Last_Save_file);
+		while (sz2--) {
+			Ship *tmp_ship = (Ship *)malloc(sizeof(Ship));
+			fread(tmp_ship, sizeof(Ship), 1, Last_Save_file);
+			Linked_List_add(result -> Player2_Ships, tmp_ship);
+		}
 	}
-	fclose(Loads);
-	fclose(Tmp);
-	system("del Files\\Tmp.bin");
-	output_color_text(yellow, "Game saved\n");
-	printf("Press any key to continue.");
-	getch();	
+	fclose(Last_Save_file);
+	return result;
 }
 
-void Save_Last(Game *current_game) {
-	if (!access("Files\\Last_Save.bin", F_OK))
-		system("del Files\\Last_Save.bin");
-	system("touch Files\\Last_Save.bin");
-
-	FILE *Last_Save_file = fopen("Files\\Last_Save.bin", "wb");
+void Write_Game_to_file(Game *current_game, char *path, char *type) {
+	if (access(path, F_OK))
+		return;
+	
+	FILE *Last_Save_file = fopen(path, type);
 	if (Last_Save_file == NULL)
-		error_exit("Cannot open Last_Save.bin");
+		error_exit("Cannot open file with the given path");
 
 	fwrite(current_game, sizeof(Game), 1, Last_Save_file);
 	fwrite(current_game -> Player1_User -> name, sizeof(char), user_name_length, Last_Save_file);
@@ -188,4 +163,77 @@ void Save_Last(Game *current_game) {
 		Player2_Ships -> cur = Player2_Ships -> cur -> nxt;
 	}
 	fclose(Last_Save_file);
+}
+
+void Save_game(Game *current_game) {
+	system("CLS");
+	if (!access("Files\\Tmp.bin", F_OK))
+		system("del Files\\Tmp.bin");
+	system("touch Files\\Tmp.bin");
+
+	bool finded = 0;
+	int indx = 1, current_game_indx = -1;
+	while (1) {
+		Game *input = Read_Game_from_file("Files\\Loads.bin", indx);
+		if (input == NULL)
+			break;
+		
+		if (input -> starting_time == current_game -> starting_time) {
+			finded = 1;
+			current_game_indx = indx;
+			break;
+		}
+		indx++;
+	}
+
+	if (!finded) {
+		system("del Files\\Tmp.bin");
+		Write_Game_to_file(current_game, "Files\\Loads.bin", "ab");
+		output_color_text(yellow, "Game saved\n");
+		printf("Press any key to continue.");
+		getch();
+		return;
+	}
+
+	indx = 1;
+	while (1) {
+		Game *input = Read_Game_from_file("Files\\Loads.bin", indx);
+		if (input == NULL)
+			break;
+		
+		if (input -> starting_time == current_game -> starting_time) {
+			indx++;
+			continue;
+		}
+		Write_Game_to_file(input, "Files\\Tmp.bin", "ab");
+		indx++;
+	}
+	system("del Files\\Loads.bin");
+	system("touch Files\\Loads.bin");
+
+	indx = 1;
+	while (1) {
+		if (indx == current_game_indx) {
+			Write_Game_to_file(current_game, "Files\\Loads.bin", "ab");
+			current_game_indx = -1;
+			continue;
+		}
+
+		Game *input = Read_Game_from_file("Files\\Tmp.bin", indx);
+		if (input == NULL)
+			break;
+		Write_Game_to_file(input, "Files\\Loads.bin", "ab");
+		indx++;
+	}
+	system("del Files\\Tmp.bin");
+	output_color_text(yellow, "Game saved\n");
+	printf("Press any key to continue.");
+	getch();	
+}
+
+void Save_Last(Game *current_game) {
+	if (!access("Files\\Last_Save.bin", F_OK))
+		system("del Files\\Last_Save.bin");
+	system("touch Files\\Last_Save.bin");
+	Write_Game_to_file(current_game, "Files\\Last_Save.bin", "wb");
 }

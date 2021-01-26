@@ -83,7 +83,7 @@ User *Choose_from_avail() {
 		
 		terminal_color(yellow);
 		printf("%d) ", indx);
-		terminal_color(blue);
+		terminal_color(cyan);
 		printf("%s\n", user -> name);
 		terminal_color(white);
 		indx++;
@@ -368,11 +368,19 @@ void Start_multiplayer_game(bool new_game) {
 	Save_Last(current_game);
 	int winner_player = 2;
 	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
-		if (current_game -> turn == 1)
+		if (current_game -> turn == 1) {
 			Player1_turn();
-		else
+			system("CLS");
+			Map_output(Player2_Map -> unknown_map, map_row, map_column);
+		}
+		else {
 			Player2_turn();
+			system("CLS");
+			Map_output(Player1_Map -> unknown_map, map_row, map_column);
+		}
 		Save_Last(current_game);
+		printf("\nPress any key to continue.");
+		getch();
 	}
 	if (Player2_Ships -> head -> nxt == Player2_Ships -> head)
 		winner_player = 1;
