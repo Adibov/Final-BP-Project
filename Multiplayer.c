@@ -313,6 +313,7 @@ Linked_List *Ships_manual_placement(char *message) {
 		Ships -> cur = Ships -> cur -> nxt;
 	}
 
+	system("CLS");
 	printf("Would you want to keep this placement? (y / n)\n\n");
 	Map_output(Tmp_map, map_row, map_column);
 
