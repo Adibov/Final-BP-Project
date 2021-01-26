@@ -38,6 +38,4 @@ void check_binary_files() {
 		system("touch Files\\Users.bin");
 	if (access("Files\\Loads.bin", F_OK))
 		system("touch Files\\Loads.bin");
-	if (access("Files\\Last_Loads.bin", F_OK))
-		system("touch Files\\Last_Loads.bin");
 }

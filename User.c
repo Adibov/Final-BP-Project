@@ -6,6 +6,9 @@
 #include <conio.h>
 #include "Ship.c"
 
+/* Global variables */
+int user_name_length = 60;
+
 /* Typedefs */
 typedef struct User User;
 

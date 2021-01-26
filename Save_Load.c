@@ -5,20 +5,68 @@
 #include <assert.h>
 #include <conio.h>
 #include <unistd.h>
-#include "General.c"
+#include "Setting.c"
 
 /* functions declrations */
-void Load(void);
-void Load_Last(void);
+Game *Load(void);
+Game *Load_Last(void);
 void Save_game(Game *);
+void Save_Last(Game *);
 
 /* functions definitions */
-void Load() {
+Game *Load() {
 	printf("load");
 }
 
-void Load_Last() {
-	printf("load last");
+Game *Load_Last() {
+	if (access("Files\\Last_Save.bin", F_OK)) {
+		system("CLS");
+		printf("There isn't any save yet\nPress any key to continue.");
+		getch();
+		return NULL;
+	}
+	Game *result = (Game *)malloc(sizeof(Game));
+	FILE *Last_Save_file = fopen("Files\\Last_Save.bin", "rb");
+	if (Last_Save_file == NULL)
+		error_exit("Cannot open Last_Save.bin");
+	fread(result, sizeof(Game), 1, Last_Save_file);
+	result -> Player1_User = (User *)malloc(sizeof(User));
+	result -> Player2_User = (User *)malloc(sizeof(User));
+	result -> Player1_Map = (Map *)malloc(sizeof(Map));
+	result -> Player2_Map = (Map *)malloc(sizeof(Map));
+	result -> Player1_Ships = Linked_List_init();
+	result -> Player2_Ships = Linked_List_init();
+	fread(result -> Player1_User -> name, sizeof(char), user_name_length, Last_Save_file);
+	fread(result -> Player2_User -> name, sizeof(char), user_name_length, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fread(result -> Player1_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fread(result -> Player1_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fread(result -> Player2_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fread(result -> Player2_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
+	
+	int sz1, sz2;
+	fread(&sz1, sizeof(int), 1, Last_Save_file);
+	while (sz1--) {
+		Ship *tmp_ship = (Ship *)malloc(sizeof(Ship));
+		fread(tmp_ship, sizeof(Ship), 1, Last_Save_file);
+		Linked_List_add(result -> Player1_Ships, tmp_ship);
+	}
+
+	fread(&sz2, sizeof(int), 1, Last_Save_file);
+	while (sz2--) {
+		Ship *tmp_ship = (Ship *)malloc(sizeof(Ship));
+		fread(tmp_ship, sizeof(Ship), 1, Last_Save_file);
+		Linked_List_add(result -> Player2_Ships, tmp_ship);
+	}
+	fclose(Last_Save_file);
+
+	
+	map_row = result -> map_row;
+	map_column = result -> map_column;
+	return result;
 }
 
 void Save_game(Game *current_game) {
@@ -38,7 +86,6 @@ void Save_game(Game *current_game) {
 		if (fread(input, sizeof(Game), 1, Loads) < 1)
 			break;
 		
-		printf("hey: %d %d\n", input -> starting_time, current_game -> starting_time);
 		if (input -> starting_time == current_game -> starting_time) {
 			finded = 1;
 			break;
@@ -102,4 +149,43 @@ void Save_game(Game *current_game) {
 	output_color_text(yellow, "Game saved\n");
 	printf("Press any key to continue.");
 	getch();	
+}
+
+void Save_Last(Game *current_game) {
+	if (!access("Files\\Last_Save.bin", F_OK))
+		system("del Files\\Last_Save.bin");
+	system("touch Files\\Last_Save.bin");
+
+	FILE *Last_Save_file = fopen("Files\\Last_Save.bin", "wb");
+	if (Last_Save_file == NULL)
+		error_exit("Cannot open Last_Save.bin");
+
+	fwrite(current_game, sizeof(Game), 1, Last_Save_file);
+	fwrite(current_game -> Player1_User -> name, sizeof(char), user_name_length, Last_Save_file);
+	fwrite(current_game -> Player2_User -> name, sizeof(char), user_name_length, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fwrite(current_game -> Player1_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fwrite(current_game -> Player1_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fwrite(current_game -> Player2_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
+	for (int i = 0; i < map_max_size; i++)
+		fwrite(current_game -> Player2_Map -> unknown_map[i], sizeof(char), map_max_size, Last_Save_file);
+	
+	Linked_List *Player1_Ships = current_game -> Player1_Ships, *Player2_Ships = current_game -> Player2_Ships;
+	int sz1 = Linked_List_size(Player1_Ships), sz2 = Linked_List_size(Player2_Ships);
+	fwrite(&sz1, sizeof(int), 1, Last_Save_file);
+	Player1_Ships -> cur = Player1_Ships -> head -> nxt;
+	while (Player1_Ships -> cur != Player1_Ships -> head) {
+		fwrite((Ship *)Player1_Ships -> cur -> value, sizeof(Ship), 1, Last_Save_file);
+		Player1_Ships -> cur = Player1_Ships -> cur -> nxt;
+	}
+
+	fwrite(&sz2, sizeof(int), 1, Last_Save_file);
+	Player2_Ships -> cur = Player2_Ships -> head -> nxt;
+	while (Player2_Ships -> cur != Player2_Ships -> head) {
+		fwrite((Ship *)Player2_Ships -> cur -> value, sizeof(Ship), 1, Last_Save_file);
+		Player2_Ships -> cur = Player2_Ships -> cur -> nxt;
+	}
+	fclose(Last_Save_file);
 }

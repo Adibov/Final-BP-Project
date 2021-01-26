@@ -119,6 +119,8 @@ User *Choose_from_avail() {
 User *New_user() {
 	system("CLS");
 	char username[200];
+	for (int i = 0; i < 200; i++)
+		username[i] = '\0';
 	printf("Enter a username with at most 50 characters: ");
 	gets(username);
 	while (!strlen(username))
@@ -155,7 +157,8 @@ User *New_user() {
 		error_exit("Cannot fopen user_file");
 	
 	user -> point = 0;
-	strcpy(user -> name, username);
+	for (int i = 0; i < user_name_length; i++)
+		user -> name[i] = username[i];
 	fwrite(user, sizeof(User), 1, user_file);
 	fclose(user_file);
 	return user;
@@ -348,14 +351,28 @@ void Start_multiplayer_game(bool new_game) {
 		current_game -> player1_point = 0;
 		current_game -> player2_point = 0;
 		current_game -> starting_time = time(0);
+		current_game -> map_row = map_row;
+		current_game -> map_column = map_column;
+	}
+	else {
+		Player1_User = current_game -> Player1_User;
+		Player2_User = current_game -> Player2_User;
+		Player1_Ships = current_game -> Player1_Ships;
+		Player2_Ships = current_game -> Player2_Ships;
+		Player1_Map = current_game -> Player1_Map;
+		Player2_Map = current_game -> Player2_Map;
+		map_row = current_game -> map_row;
+		map_column = current_game -> map_column;
 	}
 
+	Save_Last(current_game);
 	int winner_player = 2;
 	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
 		if (current_game -> turn == 1)
 			Player1_turn();
 		else
 			Player2_turn();
+		Save_Last(current_game);
 	}
 	if (Player2_Ships -> head -> nxt == Player2_Ships -> head)
 		winner_player = 1;
@@ -364,7 +381,10 @@ void Start_multiplayer_game(bool new_game) {
 void Player1_turn() {
 	system("CLS");
 	Map_output(Player2_Map -> unknown_map, map_row, map_column);
-	output_color_text(red, "\nFirst player turn\n");
+	output_color_text(red, "\nFirst player turn ");
+	terminal_color(red);
+	printf("(%s):\n", Player1_User -> name);
+	terminal_color(white);
 	printf("Enter ");
 	output_color_text(blue, " row No.");
 	printf(" and ");
@@ -450,7 +470,10 @@ void Player1_shoot(int x, int y) {
 void Player2_turn() {
 	system("CLS");
 	Map_output(Player1_Map -> unknown_map, map_row, map_column);
-	output_color_text(red, "\nSecond player turn\n");
+	output_color_text(red, "\nSecond player turn ");
+	terminal_color(red);
+	printf("(%s):\n", Player2_User -> name);
+	terminal_color(white);
 	printf("Enter ");
 	output_color_text(blue, " row No.");
 	printf(" and ");

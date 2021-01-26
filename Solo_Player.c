@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
-#include "Setting.c"
+#include "Save_Load.c"
 
 /* functions declrations */
 void Solo_Player(void);

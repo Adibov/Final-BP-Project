@@ -23,6 +23,7 @@ struct node {
 Linked_List *Linked_List_init();
 void Linked_List_add(Linked_List *, void *);
 void Linked_List_del(Linked_List *);
+int Linked_List_size(Linked_List *);
 
 /* functions definitions */
 Linked_List *Linked_List_init() {
@@ -52,4 +53,14 @@ void Linked_List_del(Linked_List *list) { // Delete cur and change it to cur-1
 	nxt -> prv = prv;
 	free(list -> cur);
 	list -> cur = prv;
+}
+
+int Linked_List_size(Linked_List *list) {
+	int res = 0;
+	list -> cur = list -> head -> nxt;
+	while (list -> cur != list -> head) {
+		list -> cur = list -> cur -> nxt;
+		res++;
+	}
+	return res;
 }

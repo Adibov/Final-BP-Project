@@ -7,6 +7,7 @@
 #include "linked_list.c"
 
 /* Global variables */
+int map_max_size = 100;
 
 /* Typedefs */
 typedef struct Map Map;

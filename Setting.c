@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
-#include "Save_Load.c"
+#include "General.c"
 
 /* Global variables */
 int map_row, map_column;
