@@ -211,17 +211,28 @@ Linked_List *Ships_auto_placement(bool computer) {
 
 	Linked_List *result = Linked_List_init();
 
-	Ships -> cur = Ships -> head -> nxt;
-	while (Ships -> cur != Ships -> head) {
+	int permutation[50] = {}, sz = Linked_List_size(Ships);
+	for (int i = 0; i < sz; i++)
+		permutation[i] = i;
+	Random_Shuffle(permutation, sz);
+
+	int indx = 0;
+	while (indx < sz) {
+		Ships -> cur = Ships -> head -> nxt;
+		int tmp = permutation[indx];
+		while (tmp--) 
+			Ships -> cur = Ships -> cur -> nxt;
+		
 		Ship *current_ship = (Ship *)(Ships -> cur -> value);
 		int len = current_ship -> length;
 		bool placed = 0;
 
 		while (!placed) {
+			int limit = 100;
 			for (int i = 0; i < map_row; i++)
 				for (int j = 0; j < map_column && !placed; j++) {
 					int direction = (rand() & 1);
-					if (!(rand() % 3) && check_placement(Tmp_map, i, j, len, direction, map_row, map_column)) {
+					if ((limit-- <= 0 || !(rand() % 10)) && check_placement(Tmp_map, i, j, len, direction, map_row, map_column)) {
 						for (int k = 0; k < len; k++)
 							Tmp_map[i + k * dx[direction]][j + k * dy[direction]] = 'S';
 						placed = 1;
@@ -237,6 +248,7 @@ Linked_List *Ships_auto_placement(bool computer) {
 				}
 		}
 		Ships -> cur = Ships -> cur -> nxt;
+		indx++;
 	}
 
 	if (!computer) {

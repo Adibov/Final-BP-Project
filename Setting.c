@@ -24,8 +24,8 @@ void setting_init() {
 	map_row = map_column = 10;
 	Ships = Linked_List_init();
 
-	int initial_ships[] = {1, 1}, num = 2;
-	// int initial_ships[] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 5}, num = 10;
+	// int initial_ships[] = {1, 1}, num = 2;
+	int initial_ships[] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 5}, num = 10;
 	for (int i = 0; i < num; i++) {
 		Ship *ship = (Ship *)malloc(sizeof(Ship));
 		ship -> length = initial_ships[i];

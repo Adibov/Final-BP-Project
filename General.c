@@ -21,6 +21,7 @@ void invalid_input(void);
 void terminal_color(enum color_array);
 void output_color_text(enum color_array, char *);
 void Map_output(char (*)[100], int, int);
+void Random_Shuffle(int *, int);
 int string_to_int(char *);
 
 /* functions definitions */
@@ -62,15 +63,20 @@ void output_color_text(enum color_array color, char *message) {
 
 void Map_output(char Tmp_map[100][100], int n, int m) {
 	printf("   ");
-	for (int j = 0; j < m; j++)
+	for (int j = 0; j < m; j++) {
+		terminal_color(light_pink);
 		printf("  %d ", j + 1);
+		terminal_color(white);
+	}
 	printf("\n   ");
 
 	for (int j = 0; j < m; j++)
 		printf("+---");
 	printf("+\n");
 	for (int i = 0; i < n; i++) {
+		terminal_color(light_pink);
 		printf("%-3d", i + 1);
+		terminal_color(white);
 		for (int j = 0; j < m; j++) {
 			printf("| ");
 			if (Tmp_map[i][j] == 'S')
@@ -91,6 +97,16 @@ void Map_output(char Tmp_map[100][100], int n, int m) {
 		for (int j = 0; j < m; j++)
 		printf("+---");
 		printf("+\n");
+	}
+}
+
+void Random_Shuffle(int *array, int n) {
+	srand(time(0));
+	for (int i = 1; i < n; i++) {
+		int j = (rand() * rand()) % i, tmp;
+		tmp = array[j];
+		array[j] = array[i];
+		array[i] = tmp;
 	}
 }
 

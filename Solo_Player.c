@@ -90,6 +90,35 @@ void Computer_turn() {
 	
 	for (int i = 0; i < map_row; i++)
 		for (int j = 0; j < map_column; j++)
+			if (Player1_Map -> unknown_map[i][j] == 'X')
+				for (int dif_y = -1; dif_y < 2; dif_y++)
+					for (int dif_x = -1; dif_x < 2; dif_x++) {
+						int x = i + dif_x, y = j + dif_y;
+						if (is_valid(x, y, map_row, map_column) && !(x == i && y == j) && (!dif_x || !dif_y) && Player1_Map -> unknown_map[x][y] == ' ') {
+							Player2_shoot(x, y);
+							return;
+						}
+					}
+
+	int candidate[4][2] = {{1, 1}, {1, map_column - 2}, {map_row - 2, 1}, {map_row - 2, map_column - 2}};
+	for (int i = 0; i < 4; i++) {
+		int x = candidate[i][0], y = candidate[i][1];
+		if (is_valid(x, y, map_row, map_column) && Player1_Map -> unknown_map[x][y] == ' ') {
+			Player2_shoot(x, y);
+			return;
+		}
+	}
+
+	for (int i = 0; i < 200; i++) {
+		int x = (rand() * rand()) % map_row, y = (rand() * rand()) % map_column;
+		if ((x + y) % 2 && is_valid(x, y, map_row, map_column) && Player1_Map -> unknown_map[x][y] == ' ') {
+			Player2_shoot(x, y);
+			return;
+		}
+	}
+
+	for (int i = 0; i < map_row; i++)
+		for (int j = 0; j < map_column; j++)
 			if (Player1_Map -> unknown_map[i][j] == ' ' && (i + j) % 2) {
 				Player2_shoot(i, j);
 				return;

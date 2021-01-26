@@ -69,17 +69,23 @@ void main_menu() {
 		Solo_Player();
 	else if (option == 3) {
 		current_game = Load();
-		if (current_game == NULL)
+		if (current_game == NULL) 
 			main_menu();
+		else if (current_game -> mode == 1)
+			Start_solo_player_game(0);
 		else
 			Start_multiplayer_game(0);
 	}
 	else if (option == 4) {
 		current_game = Load_Last();
 		if (current_game == NULL)
-			Multiplayer();
-		else
-			Start_multiplayer_game(0);
+			main_menu();
+		else {
+			if (current_game -> mode == 1)
+				Start_solo_player_game(0);
+			else
+				Start_multiplayer_game(0);
+		}
 	}
 	else if (option == 5)
 		Setting();
