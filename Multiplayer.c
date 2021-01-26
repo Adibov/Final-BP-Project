@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
-#include "Solo_Player.c"
+#include "Save_Load.c"
 
 /* Global variables */
 User *Player1_User, *Player2_User;
@@ -20,9 +20,10 @@ User *Choose_from_avail(void);
 User *New_user(void);
 void Choose_second_user(void);
 Linked_List *Ships_placement(char *);
-Linked_List *Ships_auto_placement(char *);
+Linked_List *Ships_auto_placement(bool);
 Linked_List *Ships_manual_placement(char *);
 void Add_ships_to_map(char (*)[100], Linked_List *);
+void Start_init(bool);
 void Start_multiplayer_game(bool);
 void Player1_turn(void);
 void Player1_shoot(int, int);
@@ -191,7 +192,7 @@ Linked_List *Ships_placement(char *message) {
 	int option;
 	scanf("%d", &option);
 	if (option == 1)
-		return Ships_auto_placement(message);
+		return Ships_auto_placement(0);
 	else if (option == 2)
 		return Ships_manual_placement(message);
 	else {
@@ -200,7 +201,7 @@ Linked_List *Ships_placement(char *message) {
 	}
 }
 
-Linked_List *Ships_auto_placement(char *message) {
+Linked_List *Ships_auto_placement(bool computer) {
 	system("CLS");
 	srand(time(0));
 	char Tmp_map[100][100];
@@ -238,19 +239,23 @@ Linked_List *Ships_auto_placement(char *message) {
 		Ships -> cur = Ships -> cur -> nxt;
 	}
 
-	printf("Would you want to keep this placement? (y / n)\n\n");
-	Map_output(Tmp_map, map_row, map_column);
+	if (!computer) {
+		printf("Would you want to keep this placement? (y / n)\n\n");
+		Map_output(Tmp_map, map_row, map_column);
 
-	char option;
-	scanf(" %c", &option);
-	if (option == 'y')
-		return result;
-	else if (option == 'n')
-		return Ships_auto_placement(message);
-	else {
-		invalid_input();
-		return Ships_placement(message);
+		char option;
+		scanf(" %c", &option);
+		if (option == 'y')
+			return result;
+		else if (option == 'n')
+			return Ships_auto_placement(computer);
+		else {
+			invalid_input();
+			return Ships_auto_placement(computer);
+		}
 	}
+	else
+		return result;
 }
 
 Linked_List *Ships_manual_placement(char *message) {
@@ -337,7 +342,7 @@ void Add_ships_to_map(char Tmp_map[100][100], Linked_List *ships) {
 	}
 }
 
-void Start_multiplayer_game(bool new_game) {
+void Start_init(bool new_game) {
 	if (new_game) {
 		current_game = (Game *)malloc(sizeof(Game));
 		current_game -> Player1_User = Player1_User;
@@ -364,7 +369,10 @@ void Start_multiplayer_game(bool new_game) {
 		map_row = current_game -> map_row;
 		map_column = current_game -> map_column;
 	}
+}
 
+void Start_multiplayer_game(bool new_game) {
+	Start_init(new_game);
 	Save_Last(current_game);
 	int winner_player = 2;
 	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
@@ -384,6 +392,24 @@ void Start_multiplayer_game(bool new_game) {
 	}
 	if (Player2_Ships -> head -> nxt == Player2_Ships -> head)
 		winner_player = 1;
+	
+	system("CLS");
+	if (winner_player == 1) {
+		output_color_text(green, "Congratulations, ");
+		terminal_color(cyan);
+		printf("%s ", Player1_User -> name);
+		terminal_color(white);
+		output_color_text(green, "has won the game =D");
+	}
+	else {
+		output_color_text(green, "Congratulations, ");
+		terminal_color(cyan);
+		printf("%s ", Player2_User -> name);
+		terminal_color(white);
+		output_color_text(green, "has won the game =D");
+	}
+	printf("\nPress any key to continue.");
+	getch();
 }
 
 void Player1_turn() {

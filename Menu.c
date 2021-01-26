@@ -4,7 +4,7 @@
 #include <string.h>
 #include <assert.h>
 #include <conio.h>
-#include "Multiplayer.c"
+#include "Solo_Player.c"
 
 /* functions declrations */
 void turorial(void);
@@ -30,6 +30,8 @@ In this game we will show cells like this: \n\
 |           D           | Destroyed ship |\n\
 +-----------------------+----------------+\n\
 |           X           |  Exploded cell |\n\
++-----------------------+----------------+\n\
+|           E           |   Empty cell   |\n\
 +-----------------------+----------------+\n\n\
 \
 "	);
@@ -97,7 +99,7 @@ void Score_Board() {
 
 void Exit() {
 	system("CLS");
-	printf("Good luck, Have fun :D");
+	output_color_text(cyan, "Good luck, Have fun :D");
 	exit(0);
 }
 

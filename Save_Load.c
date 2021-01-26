@@ -5,6 +5,7 @@
 #include <assert.h>
 #include <conio.h>
 #include <unistd.h>
+#include <time.h>
 #include "Setting.c"
 
 /* functions declrations */
@@ -37,9 +38,6 @@ Game *Load() {
 			printf("%s", input -> Player1_User -> name);
 			terminal_color(white);
 			printf("'s Solo Player game, started in ");
-			terminal_color(cyan);
-			printf("%d\n", input -> starting_time);
-			terminal_color(white);
 		}
 		else {
 			terminal_color(cyan);
@@ -50,10 +48,14 @@ Game *Load() {
 			printf("%s", input -> Player2_User -> name);
 			terminal_color(white);
 			printf("'s Multiplayer game, started in ");
-			terminal_color(cyan);
-			printf("%d\n", input -> starting_time);
-			terminal_color(white);
 		}
+
+		time_t rawtime = input -> starting_time;
+		struct tm * timeinfo;
+		timeinfo = localtime ( &rawtime );
+		terminal_color(cyan);
+		printf("%s\n", asctime(timeinfo));
+		terminal_color(white);
 		indx++;
 	}
 	output_color_text(light_red, "\nEnter the id of the saved game that you want to choose (or enter 0 to bring up main menu): ");
