@@ -30,6 +30,7 @@ void Player1_shoot(int, int);
 void Player2_turn(void);
 void Player2_shoot(int, int);
 void destroy_ship(Ship *, char (*)[]);
+void Add_points(char *, int);
 
 /* functions definitions */
 void Multiplayer() {
@@ -51,12 +52,18 @@ void Multiplayer_menu() {
 }
 
 User *Choose_user(char *message) {
-	printf("\
-%s\n\
-	Choose user:\n\
-		1) Choose from available users\n\
-		2) New user\n\
-",	message);
+	system("CLS");
+	terminal_color(red);
+	printf("%s\n", message);
+	terminal_color(white);
+	output_color_text(light_cyan, "  Choose user:\n\n");
+	char *output[2] = {"Choose from available users", "New user"};
+	for (int i = 0; i < 2; i++) {
+		terminal_color(yellow);
+		printf("    %d) ", i + 1);
+		terminal_color(white);
+		printf("%s\n\n", output[i]);
+	}
 
 	int option;
 	scanf("%d", &option);
@@ -78,6 +85,7 @@ User *Choose_from_avail() {
 
 	User *user = (User *)malloc(sizeof(User));
 	int indx = 1;
+	output_color_text(light_cyan, "    Username           Points\n\n");
 	while (1) {
 		if (fread(user, sizeof(User), 1, user_file) < 1)
 			break;
@@ -85,7 +93,7 @@ User *Choose_from_avail() {
 		terminal_color(yellow);
 		printf("%d) ", indx);
 		terminal_color(cyan);
-		printf("%s\n", user -> name);
+		printf("%-22.22s%d\n\n", user -> name, user -> point);
 		terminal_color(white);
 		indx++;
 	}
@@ -171,7 +179,8 @@ void Choose_second_user() {
 		Player2_User = Choose_user("Second player");
 		if (!strcmp(Player1_User -> name, Player2_User -> name)) {
 			system("CLS");
-			printf("This user has been chosen\nPress any key to continue.");
+			output_color_text(red, "This user has been chosen\n\n");
+			printf("Press any key to continue.");
 			getch();
 			system("CLS");
 			continue;
@@ -181,13 +190,18 @@ void Choose_second_user() {
 }
 
 Linked_List *Ships_placement(char *message) {
-		system("CLS");
-		printf("\
-%s\n\
-	Ships placement:\n\
-		1) Auto\n\
-		2) Manual\n\
-",	message);
+	system("CLS");
+	terminal_color(red);
+	printf("%s\n", message);
+	terminal_color(white);
+	output_color_text(light_cyan, "  Ships placement:\n\n");
+	char *output[2] = {"Auto", "Manual"};
+	for (int i = 0; i < 2; i++) {
+		terminal_color(yellow);
+		printf("    %d) ", i + 1);
+		terminal_color(white);
+		printf("%s\n\n", output[i]);
+	}
 
 	int option;
 	scanf("%d", &option);
@@ -286,10 +300,23 @@ Linked_List *Ships_manual_placement(char *message) {
 	while (Ships -> cur != Ships -> head) {
 		Ship *current_ship = (Ship *)(Ships -> cur -> value);
 		int len = current_ship -> length;
-		bool placed = 0;
+		bool placed = 0, can_place = 0;
+
+		for (int i = 0; i < map_row; i++)
+			for (int j = 0; j < map_column; j++)
+				if (check_placement(Tmp_map, i, j, len, 0, map_row, map_column) || check_placement(Tmp_map, i, j, len, 1, map_row, map_column))
+					can_place = 1;
+		
+		if (!can_place) {
+			system("CLS");
+			output_color_text(red, "Cannot place any more ship\n\n");
+			printf("Press any key to continue");
+			getch();
+			return Ships_placement(message);
+		}
 
 		while (!placed) {
-			int i, j, direction;
+			int i, j, direction = 0;
 			system("CLS");
 			Map_output(Tmp_map, map_row, map_column);
 			printf("Where do you want to add a ship with length %d? (Consider upper leftmost cell of the ship, and enter row No. and column No. by order)\n", len);
@@ -300,15 +327,18 @@ Linked_List *Ships_manual_placement(char *message) {
 				continue;
 			}
 
-			printf("\nNow enter the direction: (0 for vertical and 1 for horizontal)\n");
-			scanf("%d", &direction);
-			if (direction && direction != 1) {
-				invalid_input();
-				continue;
+			if (len > 1) {
+				printf("\nNow enter the direction: (0 for vertical and 1 for horizontal)\n");
+				scanf("%d", &direction);
+				if (direction && direction != 1) {
+					invalid_input();
+					continue;
+				}
 			}
 			if (!check_placement(Tmp_map, i, j, len, direction, map_row, map_column)) {
 				system("CLS");
-				printf("Cannot place the ship here\nPress any key to continue.");
+				output_color_text(red, "Cannot place the ship here\n\n");
+				printf("Press any key to continue");
 				getch();
 				continue;
 			}
@@ -411,6 +441,8 @@ void Start_multiplayer_game(bool new_game) {
 	
 	system("CLS");
 	if (winner_player == 1) {
+		Add_points(Player1_User -> name, current_game -> player1_point);
+		Add_points(Player2_User -> name, (current_game -> player2_point) / 2);
 		output_color_text(green, "Congratulations, ");
 		terminal_color(cyan);
 		printf("%s ", Player1_User -> name);
@@ -418,6 +450,8 @@ void Start_multiplayer_game(bool new_game) {
 		output_color_text(green, "has won the game =D");
 	}
 	else {
+		Add_points(Player1_User -> name, (current_game -> player1_point) / 2);
+		Add_points(Player2_User -> name, current_game -> player2_point);
 		output_color_text(green, "Congratulations, ");
 		terminal_color(cyan);
 		printf("%s ", Player2_User -> name);
@@ -512,6 +546,7 @@ void Player1_shoot(int x, int y) {
 			is_destroyed = 0;
 	}
 	if (is_destroyed) {
+		current_game -> player1_point += (5 * get_largest_ship_length()) / len;
 		destroy_ship(exploded_ship, Player2_Map -> unknown_map);
 		Linked_List_del(Player2_Ships);
 	}
@@ -601,6 +636,7 @@ void Player2_shoot(int x, int y) {
 			is_destroyed = 0;
 	}
 	if (is_destroyed) {
+		current_game -> player2_point += (5 * get_largest_ship_length()) / len;
 		destroy_ship(exploded_ship, Player1_Map -> unknown_map);
 		Linked_List_del(Player1_Ships);
 	}
@@ -619,4 +655,25 @@ void destroy_ship(Ship *current_ship, char current_map[100][100]) {
 			}
 	}
 	current_ship -> destroyed = 1;
+}
+
+void Add_points(char *name, int dif) {
+	FILE *user_file = fopen("Files\\Users.bin", "rb+");
+	if (user_file == NULL)
+		error_exit("Cannot fopen user_file");
+	
+	int indx = 0;
+	User *tmp_user = (User *)malloc(sizeof(User));
+	while (1) {
+		if (fread(tmp_user, sizeof(User), 1, user_file) < 1)
+			error_exit("Cannot find name user in Users.bin");
+		
+		if (!strcmp(tmp_user -> name, name))
+			break;
+		indx++;
+	}
+	tmp_user -> point += dif;
+	fseek(user_file, indx * sizeof(User), SEEK_SET);
+	fwrite(tmp_user, sizeof(User), 1, user_file);
+	fclose(user_file);
 }

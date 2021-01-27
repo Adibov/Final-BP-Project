@@ -1,8 +1,7 @@
-• Saving current game
+• Saving current game (done)
 • Saving current ships placement
-• Printing appropriate comments
-• Autosave option
-• Delete a user profile
-• Colorful texts
-• Sound Effects
+• Printing appropriate comments (done)
+• A̶u̶t̶o̶s̶a̶v̶e̶ ̶o̶p̶t̶i̶o̶n̶
 • Delete existing users
+• Colorful texts (done)
+• Sound Effects

@@ -130,7 +130,47 @@ void main_menu() {
 }
 
 void Score_Board() {
-	printf("score board");
+	system("CLS");
+	char username[100][60];
+	int user_points[100], indx = 0;
+	FILE *user_file = fopen("Files\\Users.bin", "rb+");
+	if (user_file == NULL)
+		error_exit("Cannot fopen user_file");
+	
+	User *tmp_user = (User *)malloc(sizeof(User));
+	while (1) {
+		if (fread(tmp_user, sizeof(User), 1, user_file) < 1)
+			break;
+		
+		strcpy(username[indx], tmp_user -> name);
+		user_points[indx] = tmp_user -> point;
+		int tmp_indx = indx;
+		while (tmp_indx > 0 && user_points[tmp_indx - 1] < user_points[tmp_indx]) {
+			char tmp_username[100];
+			strcpy(tmp_username, username[tmp_indx]);
+			strcpy(username[tmp_indx], username[tmp_indx - 1]);
+			strcpy(username[tmp_indx - 1], tmp_username);
+			
+			int tmp_point = user_points[tmp_indx];
+			user_points[tmp_indx] = user_points[tmp_indx - 1];
+			user_points[tmp_indx - 1] = tmp_point;
+			tmp_indx--;
+		}
+		indx++;
+	}
+	fclose(user_file);
+	
+	printf("hey: %d\n", indx);
+	output_color_text(light_cyan, "    Username           Points\n\n");
+	for (int i = 0; i < indx; i++) {
+		terminal_color(yellow);
+		printf("%d) ", i + 1);
+		terminal_color(cyan);
+		printf("%-22.22s%d\n\n", username[i], user_points[i]);
+		terminal_color(white);
+	}
+	printf("Press any key to continue.");
+	getch();
 }
 
 void Exit() {

@@ -27,6 +27,14 @@ void Setting() {
 		terminal_color(yellow);
 		printf("%d) ", i + 1);
 		terminal_color(white);
+		if (i == 2) {
+			output_color_text(pink, "T");
+			output_color_text(blue, "h");
+			output_color_text(green, "e");
+			output_color_text(yellow, "m");
+			output_color_text(red, "e\n\n");
+			continue;
+		}
 		printf("%s\n\n", input_list[i]);
 	}
 	

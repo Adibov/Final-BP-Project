@@ -57,11 +57,15 @@ void Start_solo_player_game(bool new_game) {
 		winner_player = 1;
 	
 	system("CLS");
-	if (winner_player == 1)
+	if (winner_player == 1) {
+		Add_points(Player1_User -> name, current_game -> player1_point);
 		output_color_text(green, "Congratulations, you have won the game =D");
-	else
+	}
+	else {
+		Add_points(Player1_User -> name, (current_game -> player1_point) / 2);
 		output_color_text(red, "Better luck next time =(");
-	printf("\nPress any key to continue.");
+	}
+	printf("\n\nPress any key to continue.");
 	getch();
 }
 
