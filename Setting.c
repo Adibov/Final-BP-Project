@@ -13,6 +13,7 @@ Linked_List *Ships;
 /* functions declrations */
 void Setting(void);
 void setting_init(void);
+void check_setting_files(void);
 int get_largest_ship_length(void);
 
 /* functions definitions */
@@ -21,15 +22,42 @@ void Setting() {
 }
 
 void setting_init() {
-	map_row = map_column = 10;
+	check_setting_files();
+	FILE *settings = fopen("Files\\Settings.bin", "rb");
+	if (settings == NULL)
+		error_exit("Cannot open Settings.bin to read");
+	
+	fread(&map_row, sizeof(int), 1, settings);
+	fread(&map_column, sizeof(int), 1, settings);
 	Ships = Linked_List_init();
 
-	// int initial_ships[] = {1, 1}, num = 2;
-	int initial_ships[] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 5}, num = 10;
+	int num;
+	fread(&num, sizeof(int), 1, settings);
 	for (int i = 0; i < num; i++) {
+		int current_length;
+		fread(&current_length, sizeof(int), 1, settings);
 		Ship *ship = (Ship *)malloc(sizeof(Ship));
-		ship -> length = initial_ships[i];
+		ship -> length = current_length;
 		Linked_List_add(Ships, ship);
+	}
+	fclose(settings);
+}
+
+void check_setting_files() {
+	if (access("Files\\Settings.bin", F_OK)) {
+		system("touch Files\\Settings.bin");
+		FILE *settings = fopen("Files\\Settings.bin", "wb");
+		if (settings == NULL)
+			error_exit("Cannot open Settings.bin to write");
+			
+		map_row = map_column = 10;
+		fwrite(&map_row, sizeof(int), 1, settings);
+		fwrite(&map_column, sizeof(int), 1, settings);
+
+		int initial_ships[] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 5}, num = 10;
+		fwrite(&num, sizeof(int), 1, settings);
+		fwrite(initial_ships, sizeof(int), num, settings);
+		fclose(settings);
 	}
 }
 

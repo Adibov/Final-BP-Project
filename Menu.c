@@ -15,28 +15,56 @@ void Exit(void);
 /* functions definitions */
 void tutorial() {
 	system("CLS");
-	printf(
+	output_color_text(light_pink,
 "\
 Hello and Welcome to Battle-Ship game.\n\
 In This game your target is to destroy all of enemy's ships. In every turn you can choose a arbitrary empty cell and fire in it, If it hits to a ship, you can fire again. You will be friendly with the game after some time.\n\n\
-In this game we will show cells like this: \n\
-+-----------------------+----------------+\n\
-|       Character       |   Description  |\n\
-++++++++++++++++++++++++++++++++++++++++++\n\
-| (nothing\\empty cell)  |  Unknown cell  |\n\
-+-----------------------+----------------+\n\
-|           W           |   Water cell   |\n\
-+-----------------------+----------------+\n\
-|           D           | Destroyed ship |\n\
-+-----------------------+----------------+\n\
-|           X           |  Exploded cell |\n\
-+-----------------------+----------------+\n\
-|           E           |   Empty cell   |\n\
-+-----------------------+----------------+\n\n\
-\
-"	);
+In this game we will show cells like this: \n");
 
+	char *table[7][2] = {{"Character", "Description"}, {"W", "Water cell"}, {"(nothing\\empty cell)", "Unknown cell"}, {"D", "Destroyed ship"}, {"X", "Exploded cell"}, {"E", "Empty cell"}, {"S", "Ship"}};
+	int table_column[2] = {23, 16};
+	printf("+");
+	for (int k = 0; k < 2; k++) {
+		for (int i = 0; i < table_column[k]; i++)
+			printf("-");
+		printf("+");
+	}
+	printf("\n");
+	for (int i = 0; i < 7; i++) {
+		printf("|");
+		for (int j = 0; j < 2; j++) {
+			int space = (table_column[j] - strlen(table[i][j])) / 2;
+			for (int k = 0; k < space; k++)
+				printf(" ");
+			
+			if (i == 1)
+				terminal_color(light_blue);
+			else if (i == 2)
+				terminal_color(light_cyan);	
+			else if (i == 3)
+				terminal_color(light_red);
+			else if (i == 4)
+				terminal_color(red);
+			else if (i == 5)
+				terminal_color(gray);
+			else if (i == 6)
+				terminal_color(yellow);
+			printf("%s", table[i][j]);
+			terminal_color(white);
 
+			space = (table_column[j] - strlen(table[i][j]) + 1) / 2;
+			for (int k = 0; k < space; k++)
+				printf(" ");
+			printf("|");
+		}
+		printf("\n+");
+		for (int k = 0; k < 2; k++) {
+			for (int j = 0; j < table_column[k]; j++) 
+				printf("-");
+			printf("+");
+		}
+		printf("\n");
+	}
 	printf("Press any key to continue\n");
 	getch();
 	system("CLS");
