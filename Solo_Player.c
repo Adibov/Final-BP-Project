@@ -47,7 +47,7 @@ void Start_solo_player_game(bool new_game) {
 			Computer_turn();
 			system("CLS");
 			Map_output(Player1_Map -> unknown_map, map_row, map_column);
-			output_color_text(red, "The computer has done its move\n");
+			output_color_text(red, "\nThe computer has done its move\n");
 		}
 		Save_Last(current_game);
 		printf("\nPress any key to continue.");

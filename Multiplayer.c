@@ -432,7 +432,7 @@ void Player1_turn() {
 	terminal_color(red);
 	printf("(%s):\n", Player1_User -> name);
 	terminal_color(white);
-	printf("Enter ");
+	printf("\nEnter ");
 	output_color_text(blue, " row No.");
 	printf(" and ");
 	output_color_text(blue, "column No.");
@@ -521,7 +521,7 @@ void Player2_turn() {
 	terminal_color(red);
 	printf("(%s):\n", Player2_User -> name);
 	terminal_color(white);
-	printf("Enter ");
+	printf("\nEnter ");
 	output_color_text(blue, " row No.");
 	printf(" and ");
 	output_color_text(blue, "column No.");

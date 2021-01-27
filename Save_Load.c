@@ -90,8 +90,10 @@ Game *Read_Game_from_file(char *path, int indx) {
 		error_exit("Cannot open file with the given path");
 	
 	while (indx--) {
-		if (fread(result, sizeof(Game), 1, Last_Save_file) < 1)
+		if (fread(result, sizeof(Game), 1, Last_Save_file) < 1) {
+			fclose(Last_Save_file);
 			return NULL;
+		}
 
 		result -> Player1_User = (User *)malloc(sizeof(User));
 		result -> Player2_User = (User *)malloc(sizeof(User));

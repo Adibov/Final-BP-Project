@@ -22,7 +22,7 @@ struct Ship {
 };
 
 /* functions declrations */
-//bool check_placement(char*[100], int, int, int, int);
+bool check_placement(char(*)[100], int, int, int, int, int, int);
 bool is_valid(int, int, int, int);
 
 /* functions definitions */

@@ -77,14 +77,14 @@ void main_menu() {
 		terminal_color(yellow);
 		printf("%d) ", i + 1);
 		terminal_color(white);
-		printf("%s\n", input_list[i]);
+		printf("%s\n\n", input_list[i]);
 	}
 
 	char input[100];
 	int option;
 	output_color_text(light_red, "Choose an option: ");
 	scanf(" %s", &input);
-	if (input[0] < '1' || '7' < input[0]) {
+	if (strlen(input) > 1 || strlen(input) < 1 || input[0] < '1' || '7' < input[0]) {
 		invalid_input();
 		main_menu();
 		return;
@@ -115,8 +115,10 @@ void main_menu() {
 				Start_multiplayer_game(0);
 		}
 	}
-	else if (option == 5)
+	else if (option == 5) {
 		Setting();
+		main_menu();
+	}
 	else if (option == 6)
 		Score_Board();
 	else if (option == 7)
