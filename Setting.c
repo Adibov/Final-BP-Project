@@ -34,7 +34,7 @@ void Setting() {
 	int option;
 	output_color_text(light_red, "Choose an option: ");
 	scanf(" %s", &input);
-	if (input[0] < '1' || '3' < input[0]) {
+	if (input[0] < '1' || '4' < input[0]) {
 		invalid_input();
 		Setting();
 		return;
@@ -167,7 +167,73 @@ void Ships_setting() {
 }
 
 void Map_setting() {
+	system("CLS");
+	int ships_length[100], row_num, col_num;
+	printf("Enter the number of row and column: (number of rows and columns must be between 2 and 15)\n");
+	scanf("%d %d", &row_num, &col_num);
+	if (row_num < 2 || col_num > 15 || col_num < 2 || col_num > 15) {
+		invalid_input();
+		Map_setting();
+		return;
+	}
 
+	int tmp_row = map_row, tmp_column = map_column;
+	map_row = row_num, map_column = col_num;
+	char tmp_map[100][100];
+	for (int i = 0; i < map_row; i++)
+		for (int j = 0; j < map_column; j++)
+			tmp_map[i][j] = 'E';
+	
+	bool check = 1;
+	int num = 0;
+	Ships -> cur = Ships -> head -> nxt;
+	while (Ships -> cur != Ships -> head) {
+		Ship *tmp_ship = (Ship *)Ships -> cur -> value;
+		int len = tmp_ship -> length;
+		bool placed = 0;
+		for (int i = 0; i < map_row; i++)
+			for (int j = 0; j < map_column && !placed; j++)
+				if (check_placement(tmp_map, i, j, len, horizontal, map_row, map_column))
+					for (int k = 0; k < len; k++) {
+						int x = i + k * dx[horizontal], y = j + k * dy[horizontal];
+						tmp_map[x][y] = 'S';
+						placed = 1;
+					}
+		
+		for (int i = 0; i < map_row; i++)
+			for (int j = 0; j < map_column && !placed; j++)
+				if (check_placement(tmp_map, i, j, len, vertical, map_row, map_column))
+					for (int k = 0; k < len; k++) {
+						int x = i + k * dx[vertical], y = j + k * dy[vertical];
+						tmp_map[x][y] = 'S';
+						placed = 1;
+					}
+		check &= placed;
+		ships_length[num] = len;
+		num++;
+		Ships -> cur = Ships -> cur -> nxt;
+	}
+	if (!check) {
+		map_row = tmp_row, map_column = tmp_column;
+		system("CLS");
+		output_color_text(red, "Cannot place ships in map\n\n");
+		printf("Press any key to continue.");
+		getch();
+		return;
+	}
+
+	if (access("Files\\Settings.bin", F_OK))
+		error_exit("Setting doesn't exist");
+	FILE *settings = fopen("Files\\Settings.bin", "wb");
+	if (settings == NULL)
+		error_exit("Cannot open Settings.bin to write");
+
+	fwrite(&map_row, sizeof(int), 1, settings);
+	fwrite(&map_column, sizeof(int), 1, settings);
+	fwrite(&num, sizeof(int), 1, settings);
+	fwrite(ships_length, sizeof(int), num, settings);
+	fclose(settings);
+	setting_init();
 }
 
 void Theme_setting() {
