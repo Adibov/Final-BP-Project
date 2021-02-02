@@ -104,14 +104,14 @@ void Computer_turn() {
 						}
 					}
 
-	int candidate[4][2] = {{1, 1}, {1, map_column - 2}, {map_row - 2, 1}, {map_row - 2, map_column - 2}};
-	for (int i = 0; i < 4; i++) {
-		int x = candidate[i][0], y = candidate[i][1];
-		if (is_valid(x, y, map_row, map_column) && Player1_Map -> unknown_map[x][y] == ' ') {
-			Player2_shoot(x, y);
-			return;
-		}
-	}
+	// int candidate[4][2] = {{1, 1}, {1, map_column - 2}, {map_row - 2, 1}, {map_row - 2, map_column - 2}};
+	// for (int i = 0; i < 4; i++) {
+	// 	int x = candidate[i][0], y = candidate[i][1];
+	// 	if (is_valid(x, y, map_row, map_column) && Player1_Map -> unknown_map[x][y] == ' ') {
+	// 		Player2_shoot(x, y);
+	// 		return;
+	// 	}
+	// }
 
 	for (int i = 0; i < 200; i++) {
 		int x = (rand() * rand()) % map_row, y = (rand() * rand()) % map_column;
