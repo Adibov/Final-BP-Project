@@ -27,8 +27,10 @@ void Start_init(bool);
 void Start_multiplayer_game(bool);
 void Player1_turn(void);
 void Player1_shoot(int, int);
+void Player1_rocket_use(void);
 void Player2_turn(void);
 void Player2_shoot(int, int);
+void Player2_rocket_use(void);
 void destroy_ship(Ship *, char (*)[]);
 void Add_points(char *, int);
 
@@ -401,6 +403,8 @@ void Start_init(bool new_game) {
 		current_game -> turn = 1;
 		current_game -> player1_point = 0;
 		current_game -> player2_point = 0;
+		current_game -> Player1_User -> rocket_used = 0;
+		current_game -> Player2_User -> rocket_used = 0;
 		current_game -> starting_time = time(0);
 		current_game -> map_row = map_row;
 		current_game -> map_column = map_column;
@@ -482,7 +486,7 @@ void Player1_turn() {
 	output_color_text(blue, " row No.");
 	printf(" and ");
 	output_color_text(blue, "column No.");
-	printf(" of the target cell: (Enter s to save the game)\n");
+	printf(" of the target cell: (Enter s to save the game or Enter r to use rocket)\n");
 	
 	int x, y;
 	char input[10];
@@ -490,6 +494,10 @@ void Player1_turn() {
 	if (!strcmp("s", input)) {
 		Save_game(current_game);
 		Player1_turn();
+		return;
+	}
+	else if (!strcmp("r", input)) {
+		Player1_rocket_use();
 		return;
 	}
 	x = string_to_int(input);
@@ -561,6 +569,82 @@ void Player1_shoot(int x, int y) {
 	}
 }
 
+void Player1_rocket_use() {
+	system("CLS");
+	if (current_game -> Player1_User -> rocket_used) {
+		output_color_text(light_red, "You've used your rocket before\n\n");
+		printf("Press any key to continue.");
+		getch();
+		Player1_turn();
+		return;
+	}
+	if (current_game -> player1_point < 100) {
+		output_color_text(light_red, "You don't have the required score\n\n");
+		printf("Press any key to continue.");
+		getch();
+		Player1_turn();
+		return;
+	}
+
+	Map_output(current_game -> Player2_Map -> unknown_map, map_row, map_column);
+	printf("Enter ");
+	output_color_text(blue, "v ");
+	printf("to shoot rocket vertically or ");
+	output_color_text(blue, "h ");
+	printf("to shoot it horizontally: \n");
+
+	char input[100];
+	scanf(" %s", &input);
+	if (!(input[0] == 'v' || input[0] == 'h')) {
+		invalid_input();
+		Player1_rocket_use();
+		return;
+	}
+
+	if (input[0] == 'v') {
+		printf("Now enter ");
+		output_color_text(blue, "column No. ");
+		printf("of the target column:\n");
+		scanf(" %s", &input);
+		
+		int target_column = string_to_int(input);
+		target_column--;
+		if (target_column < 0 || target_column >= map_column) {
+			invalid_input();
+			Player1_rocket_use();
+			return;
+		}
+		for (int i = 0; i < map_row; i++)
+			if (current_game -> Player2_Map -> unknown_map[i][target_column] == ' ') {
+				Player1_shoot(i, target_column);
+				if (current_game -> Player2_Map -> unknown_map[i][target_column] == 'X' || current_game -> Player2_Map -> unknown_map[i][target_column] == 'D')
+					break;
+			}
+	}
+	else {
+		printf("Now enter ");
+		output_color_text(blue, "row No. ");
+		printf("of the target row:\n");
+		scanf(" %s", &input);
+		
+		int target_row = string_to_int(input);
+		target_row--;
+		if (target_row < 0 || target_row >= map_row) {
+			invalid_input();
+			Player1_rocket_use();
+			return;
+		}
+		for (int j = 0; j < map_column; j++)
+			if (current_game -> Player2_Map -> unknown_map[target_row][j] == ' ') {
+				Player1_shoot(target_row, j);
+				if (current_game -> Player2_Map -> unknown_map[target_row][j] == 'X' || current_game -> Player2_Map -> unknown_map[target_row][j] == 'D')
+					break;
+			}
+	}
+	current_game -> Player1_User -> rocket_used = 1;
+	current_game -> player1_point -= 100;
+}
+
 void Player2_turn() {
 	system("CLS");
 	Map_output(Player1_Map -> unknown_map, map_row, map_column);
@@ -576,7 +660,7 @@ void Player2_turn() {
 	output_color_text(blue, " row No.");
 	printf(" and ");
 	output_color_text(blue, "column No.");
-	printf(" of the target cell: (Enter s to save the game)\n");
+	printf(" of the target cell: (Enter s to save the game or Enter r to use rocket)\n");
 	
 	int x, y;
 	char input[10];
@@ -584,6 +668,10 @@ void Player2_turn() {
 	if (!strcmp("s", input)) {
 		Save_game(current_game);
 		Player2_turn();
+		return;
+	}
+	else if (!strcmp("r", input)) {
+		Player2_rocket_use();
 		return;
 	}
 	x = string_to_int(input);
@@ -653,6 +741,82 @@ void Player2_shoot(int x, int y) {
 		destroy_ship(exploded_ship, Player1_Map -> unknown_map);
 		Linked_List_del(Player1_Ships);
 	}
+}
+
+void Player2_rocket_use() {
+	system("CLS");
+	if (current_game -> Player2_User -> rocket_used) {
+		output_color_text(light_red, "You've used your rocket before\n\n");
+		printf("Press any key to continue.");
+		getch();
+		Player2_turn();
+		return;
+	}
+	if (current_game -> player2_point < 100) {
+		output_color_text(light_red, "You don't have the required score\n\n");
+		printf("Press any key to continue.");
+		getch();
+		Player2_turn();
+		return;
+	}
+
+	Map_output(current_game -> Player1_Map -> unknown_map, map_row, map_column);
+	printf("Enter ");
+	output_color_text(blue, "v ");
+	printf("to shoot rocket vertically or ");
+	output_color_text(blue, "h ");
+	printf("to shoot it horizontally: \n");
+
+	char input[100];
+	scanf(" %s", &input);
+	if (!(input[0] == 'v' || input[0] == 'h')) {
+		invalid_input();
+		Player2_rocket_use();
+		return;
+	}
+
+	if (input[0] == 'v') {
+		printf("Now enter ");
+		output_color_text(blue, "column No. ");
+		printf("of the target column:\n");
+		scanf(" %s", &input);
+		
+		int target_column = string_to_int(input);
+		target_column--;
+		if (target_column < 0 || target_column >= map_column) {
+			invalid_input();
+			Player2_rocket_use();
+			return;
+		}
+		for (int i = 0; i < map_row; i++)
+			if (current_game -> Player1_Map -> unknown_map[i][target_column] == ' ') {
+				Player2_shoot(i, target_column);
+				if (current_game -> Player1_Map -> unknown_map[i][target_column] == 'X' || current_game -> Player1_Map -> unknown_map[i][target_column] == 'D')
+					break;
+			}
+	}
+	else {
+		printf("Now enter ");
+		output_color_text(blue, "row No. ");
+		printf("of the target row:\n");
+		scanf(" %s", &input);
+		
+		int target_row = string_to_int(input);
+		target_row--;
+		if (target_row < 0 || target_row >= map_row) {
+			invalid_input();
+			Player2_rocket_use();
+			return;
+		}
+		for (int j = 0; j < map_column; j++)
+			if (current_game -> Player1_Map -> unknown_map[target_row][j] == ' ') {
+				Player2_shoot(target_row, j);
+				if (current_game -> Player1_Map -> unknown_map[target_row][j] == 'X' || current_game -> Player1_Map -> unknown_map[target_row][j] == 'D')
+					break;
+			}
+	}
+	current_game -> Player2_User -> rocket_used = 1;
+	current_game -> player2_point -= 100;
 }
 
 void destroy_ship(Ship *current_ship, char current_map[100][100]) {

@@ -16,6 +16,7 @@ typedef struct User User;
 struct User {
 	char name[60];
 	int point;
+	bool rocket_used;
 };
 
 /* functions declrations */
