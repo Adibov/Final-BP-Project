@@ -17,6 +17,7 @@ void check_setting_files(void);
 void Ships_setting(void);
 void Map_setting(void);
 void Theme_setting(void);
+void Play_Back(void);
 int get_largest_ship_length(void);
 
 /* functions definitions */
@@ -246,6 +247,10 @@ void Map_setting() {
 
 void Theme_setting() {
 
+}
+
+void Play_Back() {
+	
 }
 
 int get_largest_ship_length() {

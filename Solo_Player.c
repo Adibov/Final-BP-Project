@@ -37,6 +37,7 @@ void Start_solo_player_game(bool new_game) {
 	current_game -> mode = 1;
 	Save_Last(current_game);
 	int winner_player = 2;
+	int player1_last_score = current_game -> player1_point;
 	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
 		if (current_game -> turn == 1) {
 			Player1_turn();
@@ -50,6 +51,8 @@ void Start_solo_player_game(bool new_game) {
 			output_color_text(red, "\nThe computer has done its move\n");
 		}
 		Save_Last(current_game);
+		Add_points(Player1_User -> name, current_game -> player1_point - player1_last_score);
+		player1_last_score = current_game -> player1_point;
 		printf("\nPress any key to continue.");
 		getch();
 	}
@@ -58,11 +61,11 @@ void Start_solo_player_game(bool new_game) {
 	
 	system("CLS");
 	if (winner_player == 1) {
-		Add_points(Player1_User -> name, current_game -> player1_point);
+		// Add_points(Player1_User -> name, current_game -> player1_point);
 		output_color_text(green, "Congratulations, you have won the game =D");
 	}
 	else {
-		Add_points(Player1_User -> name, (current_game -> player1_point) / 2);
+		// Add_points(Player1_User -> name, (current_game -> player1_point) / 2);
 		output_color_text(red, "Better luck next time =(");
 	}
 	printf("\n\nPress any key to continue.");

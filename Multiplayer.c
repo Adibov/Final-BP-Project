@@ -421,6 +421,7 @@ void Start_multiplayer_game(bool new_game) {
 	Start_init(new_game);
 	Save_Last(current_game);
 	int winner_player = 2;
+	int player1_last_score = current_game -> player1_point, player2_last_score = current_game -> player2_point;
 	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
 		if (current_game -> turn == 1) {
 			Player1_turn();
@@ -433,6 +434,10 @@ void Start_multiplayer_game(bool new_game) {
 			Map_output(Player1_Map -> unknown_map, map_row, map_column);
 		}
 		Save_Last(current_game);
+		Add_points(Player1_User -> name, current_game -> player1_point - player1_last_score);
+		Add_points(Player2_User -> name, current_game -> player2_point - player2_last_score);
+		player1_last_score = current_game -> player1_point;
+		player2_last_score = current_game -> player2_point;
 		printf("\nPress any key to continue.");
 		getch();
 	}
@@ -441,8 +446,8 @@ void Start_multiplayer_game(bool new_game) {
 	
 	system("CLS");
 	if (winner_player == 1) {
-		Add_points(Player1_User -> name, current_game -> player1_point);
-		Add_points(Player2_User -> name, (current_game -> player2_point) / 2);
+		// Add_points(Player1_User -> name, current_game -> player1_point);
+		// Add_points(Player2_User -> name, (current_game -> player2_point) / 2);
 		output_color_text(green, "Congratulations, ");
 		terminal_color(cyan);
 		printf("%s ", Player1_User -> name);
@@ -450,8 +455,8 @@ void Start_multiplayer_game(bool new_game) {
 		output_color_text(green, "has won the game =D");
 	}
 	else {
-		Add_points(Player1_User -> name, (current_game -> player1_point) / 2);
-		Add_points(Player2_User -> name, current_game -> player2_point);
+		// Add_points(Player1_User -> name, (current_game -> player1_point) / 2);
+		// Add_points(Player2_User -> name, current_game -> player2_point);
 		output_color_text(green, "Congratulations, ");
 		terminal_color(cyan);
 		printf("%s ", Player2_User -> name);
@@ -468,6 +473,10 @@ void Player1_turn() {
 	output_color_text(red, "\nFirst player turn ");
 	terminal_color(red);
 	printf("(%s):\n", Player1_User -> name);
+	terminal_color(yellow);
+	printf("Your score: ");
+	terminal_color(white);
+	printf("%d\n", current_game -> player1_point);
 	terminal_color(white);
 	printf("\nEnter ");
 	output_color_text(blue, " row No.");
@@ -558,6 +567,10 @@ void Player2_turn() {
 	output_color_text(red, "\nSecond player turn ");
 	terminal_color(red);
 	printf("(%s):\n", Player2_User -> name);
+	terminal_color(yellow);
+	printf("Your score: ");
+	terminal_color(white);
+	printf("%d\n", current_game -> player2_point);
 	terminal_color(white);
 	printf("\nEnter ");
 	output_color_text(blue, " row No.");

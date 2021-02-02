@@ -72,8 +72,8 @@ In this game we will show cells like this: \n");
 
 void main_menu() {
 	system("CLS");
-	char *input_list[] = {"Play with a Friend", "Play with Computer", "Load a saved game", "Load last game", "Settings", "Score Board", "Exit"};
-	for (int i = 0; i < 7; i++) {
+	char *input_list[] = {"Play with a Friend", "Play with Computer", "Load a saved game", "Load last game", "Settings", "Score Board", "Play Back", "Exit"};
+	for (int i = 0; i < 8; i++) {
 		terminal_color(yellow);
 		printf("%d) ", i + 1);
 		terminal_color(white);
@@ -84,7 +84,7 @@ void main_menu() {
 	int option;
 	output_color_text(light_red, "Choose an option: ");
 	scanf(" %s", &input);
-	if (strlen(input) > 1 || strlen(input) < 1 || input[0] < '1' || '7' < input[0]) {
+	if (strlen(input) > 1 || strlen(input) < 1 || input[0] < '1' || '8' < input[0]) {
 		invalid_input();
 		main_menu();
 		return;
@@ -119,9 +119,13 @@ void main_menu() {
 		Setting();
 		main_menu();
 	}
-	else if (option == 6)
+	else if (option == 6) {
 		Score_Board();
+		main_menu();
+	}
 	else if (option == 7)
+		Play_Back();
+	else if (option == 8)
 		Exit();
 	else {
 		invalid_input();
@@ -160,7 +164,6 @@ void Score_Board() {
 	}
 	fclose(user_file);
 	
-	printf("hey: %d\n", indx);
 	output_color_text(light_cyan, "    Username           Points\n\n");
 	for (int i = 0; i < indx; i++) {
 		terminal_color(yellow);
