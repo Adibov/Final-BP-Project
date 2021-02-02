@@ -480,7 +480,7 @@ void Player1_turn() {
 	terminal_color(yellow);
 	printf("Your score: ");
 	terminal_color(white);
-	printf("%d\n", current_game -> player1_point);
+	printf("%d\n", current_game -> Player1_User -> point + current_game -> player1_point);
 	terminal_color(white);
 	printf("\nEnter ");
 	output_color_text(blue, " row No.");
@@ -654,7 +654,7 @@ void Player2_turn() {
 	terminal_color(yellow);
 	printf("Your score: ");
 	terminal_color(white);
-	printf("%d\n", current_game -> player2_point);
+	printf("%d\n", current_game -> Player2_User -> point + current_game -> player2_point);
 	terminal_color(white);
 	printf("\nEnter ");
 	output_color_text(blue, " row No.");
