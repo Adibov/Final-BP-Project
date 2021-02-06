@@ -401,8 +401,8 @@ void Start_init(bool new_game) {
 		current_game -> Player2_Map = Player2_Map;
 		current_game -> mode = 2;
 		current_game -> turn = 1;
-		current_game -> player1_point = 0;
-		current_game -> player2_point = 0;
+		current_game -> player1_point = Player1_User -> point;
+		current_game -> player2_point = Player2_User -> point;
 		current_game -> Player1_User -> rocket_used = 0;
 		current_game -> Player2_User -> rocket_used = 0;
 		current_game -> starting_time = time(0);
@@ -480,7 +480,7 @@ void Player1_turn() {
 	terminal_color(yellow);
 	printf("Your score: ");
 	terminal_color(white);
-	printf("%d\n", current_game -> Player1_User -> point + current_game -> player1_point);
+	printf("%d\n", current_game -> player1_point);
 	terminal_color(white);
 	printf("\nEnter ");
 	output_color_text(blue, " row No.");
@@ -654,7 +654,7 @@ void Player2_turn() {
 	terminal_color(yellow);
 	printf("Your score: ");
 	terminal_color(white);
-	printf("%d\n", current_game -> Player2_User -> point + current_game -> player2_point);
+	printf("%d\n", current_game -> player2_point);
 	terminal_color(white);
 	printf("\nEnter ");
 	output_color_text(blue, " row No.");
