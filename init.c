@@ -38,4 +38,13 @@ void check_binary_files() {
 		system("touch Files\\Users.bin");
 	if (access("Files\\Loads.bin", F_OK))
 		system("touch Files\\Loads.bin");
+	if (access("Files\\Theme.bin", F_OK)) {
+		system("touch Files\\Theme.bin");
+		FILE *theme = fopen("Files\\Theme.bin", "w");
+		for (int i = 0; i < 15; i++) {
+			int x = i + 1;
+			fwrite(&x, sizeof(int), 1, theme);
+		}
+		fclose(theme);
+	}
 }

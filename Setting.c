@@ -84,6 +84,11 @@ void setting_init() {
 		Linked_List_add(Ships, ship);
 	}
 	fclose(settings);
+
+	FILE *theme = fopen("Files\\Theme.bin", "r");
+	for (int i = 0; i < 15; i++) 
+		fread(&color_map[i], sizeof(int), 1, theme);
+	fclose(theme);
 }
 
 void check_setting_files() {
@@ -246,7 +251,64 @@ void Map_setting() {
 }
 
 void Theme_setting() {
+	system("CLS");
+	for (int i = 0; i < 15; i++)
+		color_map[i] = i + 1;
 
+	// W D X E S
+	output_color_text(light_red, "Which set of color do you want to pick: \n\n");
+	output_color_text(yellow, "1) ");
+	output_color_text(light_blue, "W ");
+	output_color_text(light_red, "D ");
+	output_color_text(red, "X ");
+	output_color_text(gray, "E ");
+	output_color_text(yellow, "S\n\n");
+
+	output_color_text(yellow, "2) ");
+	output_color_text(blue, "W ");
+	output_color_text(red, "D ");
+	output_color_text(light_red, "X ");
+	output_color_text(light_white, "E ");
+	output_color_text(light_yellow, "S\n\n");
+
+	output_color_text(yellow, "3) ");
+	output_color_text(blue, "W ");
+	output_color_text(red, "D ");
+	output_color_text(light_red, "X ");
+	output_color_text(gray, "E ");
+	output_color_text(yellow, "S\n\n");
+
+	int option;
+	scanf(" %d", &option);
+	if (option < 1 || option > 3) {
+		invalid_input();
+		Theme_setting();
+		return;
+	}
+
+	if (option == 2) {
+		color_map[0] = 9;
+		color_map[8] = 1;
+		color_map[3] = 12;
+		color_map[11] = 4;
+		color_map[7] = 7;
+		color_map[6] = 8;
+		color_map[5] = 14;
+		color_map[13] = 6;
+	}
+	else if (option == 3) {
+		color_map[0] = 9;
+		color_map[8] = 1;
+		color_map[3] = 12;
+		color_map[11] = 4;
+	}
+
+	FILE *theme = fopen("Files\\Theme.bin", "w");
+	for (int i = 0; i < 15; i++) {
+		int x = color_map[i];
+		fwrite(&x, sizeof(int), 1, theme);
+	}
+	fclose(theme);
 }
 
 void Play_Back() {

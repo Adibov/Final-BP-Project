@@ -11,6 +11,7 @@
 
 /* Global variables */
 enum color_array {light_blue = 1, light_green, light_cyan, light_red, light_pink, light_yellow, light_white, gray, blue, green, cyan, red, pink, yellow, white};
+int color_map[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
 /* Typedefs */
 typedef enum color_array color_array;
@@ -41,6 +42,7 @@ void invalid_input() {
 
 void terminal_color(enum color_array color) {
 	HANDLE Console;
+	color = color_map[color - 1];
 	Console = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(Console, color);
 /*
