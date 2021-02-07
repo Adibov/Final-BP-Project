@@ -178,7 +178,7 @@ void Score_Board() {
 
 void Exit() {
 	system("CLS");
-	output_color_text(cyan, "Good luck, Have fun :D");
+	output_color_text(cyan, "Good luck, Have fun :D\n\n");
 	exit(0);
 }
 

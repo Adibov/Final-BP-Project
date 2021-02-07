@@ -21,6 +21,7 @@ void error_exit(char *);
 void invalid_input(void);
 void terminal_color(enum color_array);
 void output_color_text(enum color_array, char *);
+void color_reset(void);
 void Map_output(char (*)[100], int, int);
 void Random_Shuffle(int *, int);
 int string_to_int(char *);
@@ -61,6 +62,11 @@ void output_color_text(enum color_array color, char *message) {
 	terminal_color(color);
 	printf("%s", message);
 	terminal_color(white);
+}
+
+void color_reset() {
+	for (int i = 0; i < 15; i++)
+		color_map[i] = i + 1;
 }
 
 void Map_output(char Tmp_map[100][100], int n, int m) {

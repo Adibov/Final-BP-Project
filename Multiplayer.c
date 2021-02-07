@@ -449,6 +449,7 @@ void Start_multiplayer_game(bool new_game) {
 		winner_player = 1;
 	
 	system("CLS");
+	color_reset();
 	if (winner_player == 1) {
 		// Add_points(Player1_User -> name, current_game -> player1_point);
 		// Add_points(Player2_User -> name, (current_game -> player2_point) / 2);
