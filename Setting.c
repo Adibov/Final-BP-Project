@@ -13,7 +13,6 @@ Linked_List *Ships;
 /* functions declrations */
 void Setting(void);
 void setting_init(void);
-void check_setting_files(void);
 void Ships_setting(void);
 void Map_setting(void);
 void Theme_setting(void);
@@ -59,7 +58,6 @@ void Setting() {
 }
 
 void setting_init() {
-	check_setting_files();
 	FILE *settings = fopen("Files\\Settings.bin", "rb");
 	if (settings == NULL)
 		error_exit("Cannot open Settings.bin to read");
@@ -89,24 +87,6 @@ void setting_init() {
 	for (int i = 0; i < 15; i++) 
 		fread(&color_map[i], sizeof(int), 1, theme);
 	fclose(theme);
-}
-
-void check_setting_files() {
-	if (access("Files\\Settings.bin", F_OK)) {
-		system("touch Files\\Settings.bin");
-		FILE *settings = fopen("Files\\Settings.bin", "wb");
-		if (settings == NULL)
-			error_exit("Cannot open Settings.bin to write");
-
-		map_row = map_column = 10;
-		fwrite(&map_row, sizeof(int), 1, settings);
-		fwrite(&map_column, sizeof(int), 1, settings);
-
-		int initial_ships[] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 5}, num = 10;
-		fwrite(&num, sizeof(int), 1, settings);
-		fwrite(initial_ships, sizeof(int), num, settings);
-		fclose(settings);
-	}
 }
 
 void Ships_setting() {

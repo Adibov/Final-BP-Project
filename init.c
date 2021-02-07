@@ -35,16 +35,31 @@ void check_files() {
 
 void check_binary_files() {
 	if (access("Files\\Users.bin", F_OK)) // file doesn't exists
-		system("touch Files\\Users.bin");
+		system("type nul > Files\\Users.bin");
 	if (access("Files\\Loads.bin", F_OK))
-		system("touch Files\\Loads.bin");
+		system("type nul > Files\\Loads.bin");
 	if (access("Files\\Theme.bin", F_OK)) {
-		system("touch Files\\Theme.bin");
+		system("type nul > Files\\Theme.bin");
 		FILE *theme = fopen("Files\\Theme.bin", "w");
 		for (int i = 0; i < 15; i++) {
 			int x = i + 1;
 			fwrite(&x, sizeof(int), 1, theme);
 		}
 		fclose(theme);
+	}
+	if (access("Files\\Settings.bin", F_OK)) {
+		system("type nul > Files\\Settings.bin");
+		FILE *settings = fopen("Files\\Settings.bin", "wb");
+		if (settings == NULL)
+			error_exit("Cannot open Settings.bin to write");
+
+		map_row = map_column = 10;
+		fwrite(&map_row, sizeof(int), 1, settings);
+		fwrite(&map_column, sizeof(int), 1, settings);
+
+		int initial_ships[] = {1, 1, 1, 1, 2, 2, 2, 3, 3, 5}, num = 10;
+		fwrite(&num, sizeof(int), 1, settings);
+		fwrite(initial_ships, sizeof(int), num, settings);
+		fclose(settings);
 	}
 }

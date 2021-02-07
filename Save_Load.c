@@ -173,7 +173,7 @@ void Save_game(Game *current_game) {
 	system("CLS");
 	if (!access("Files\\Tmp.bin", F_OK))
 		system("del Files\\Tmp.bin");
-	system("touch Files\\Tmp.bin");
+	system("type nul > Files\\Tmp.bin");
 
 	bool finded = 0;
 	int indx = 1, current_game_indx = -1;
@@ -213,7 +213,7 @@ void Save_game(Game *current_game) {
 		indx++;
 	}
 	system("del Files\\Loads.bin");
-	system("touch Files\\Loads.bin");
+	system("type nul > Files\\Loads.bin");
 
 	indx = 1;
 	while (1) {
@@ -238,6 +238,6 @@ void Save_game(Game *current_game) {
 void Save_Last(Game *current_game) {
 	if (!access("Files\\Last_Save.bin", F_OK))
 		system("del Files\\Last_Save.bin");
-	system("touch Files\\Last_Save.bin");
+	system("type nul > Files\\Last_Save.bin");
 	Write_Game_to_file(current_game, "Files\\Last_Save.bin", "wb");
 }
