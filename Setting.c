@@ -272,10 +272,10 @@ void Theme_setting() {
 	output_color_text(light_yellow, "S\n\n");
 
 	output_color_text(yellow, "3) ");
-	output_color_text(blue, "W ");
+	output_color_text(cyan, "W ");
 	output_color_text(red, "D ");
-	output_color_text(light_red, "X ");
-	output_color_text(gray, "E ");
+	output_color_text(green, "X ");
+	output_color_text(light_white, "E ");
 	output_color_text(yellow, "S\n\n");
 
 	int option;
@@ -297,10 +297,14 @@ void Theme_setting() {
 		color_map[13] = 6;
 	}
 	else if (option == 3) {
-		color_map[0] = 9;
-		color_map[8] = 1;
+		color_map[0] = 11;
+		color_map[10] = 1;
 		color_map[3] = 12;
 		color_map[11] = 4;
+		color_map[11] = 10;
+		color_map[9] = 12;
+		color_map[7] = 7;
+		color_map[6] = 8;
 	}
 
 	FILE *theme = fopen("Files\\Theme.bin", "w");
