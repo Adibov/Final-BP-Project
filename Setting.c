@@ -227,6 +227,8 @@ void Map_setting() {
 	fwrite(&num, sizeof(int), 1, settings);
 	fwrite(ships_length, sizeof(int), num, settings);
 	fclose(settings);
+	system("del Files\\Playback.bin");
+	system("type nul > Files\\Playback.bin");
 	setting_init();
 }
 
@@ -296,7 +298,25 @@ void Theme_setting() {
 }
 
 void Play_Back() {
-	
+	FILE *play_back_file = fopen("Files\\Playback.bin", "rb");
+	char tmp_map[100][100];
+	int turn = 1;
+	while (1) {
+		system("CLS");
+		bool ended = 0;
+		for (int i = 0; i < map_max_size; i++)
+			if (fread(tmp_map[i], sizeof(char), map_max_size, play_back_file) < map_max_size) {
+				ended = 1;
+				break;
+			}
+		if (ended)
+			break;
+		Map_output(tmp_map, map_row, map_column);
+		printf("\nPress any key to continue.");
+		getch();
+		turn = 3 - turn;
+	}
+	fclose(play_back_file);
 }
 
 int get_largest_ship_length() {

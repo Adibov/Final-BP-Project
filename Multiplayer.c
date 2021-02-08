@@ -419,11 +419,14 @@ void Start_init(bool new_game) {
 		map_row = current_game -> map_row;
 		map_column = current_game -> map_column;
 	}
+	system("del Files\\Playback.bin");
+	system("type nul > Files\\Playback.bin");
 }
 
 void Start_multiplayer_game(bool new_game) {
 	Start_init(new_game);
 	Save_Last(current_game);
+
 	int winner_player = 2;
 	int player1_last_score = current_game -> player1_point, player2_last_score = current_game -> player2_point;
 	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
@@ -431,11 +434,19 @@ void Start_multiplayer_game(bool new_game) {
 			Player1_turn();
 			system("CLS");
 			Map_output(Player2_Map -> unknown_map, map_row, map_column);
+			FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
+			for (int i = 0; i < map_max_size; i++)
+				fwrite(Player2_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
+			fclose(play_back_file);
 		}
 		else {
 			Player2_turn();
 			system("CLS");
 			Map_output(Player1_Map -> unknown_map, map_row, map_column);
+			FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
+			for (int i = 0; i < map_max_size; i++)
+				fwrite(Player1_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
+			fclose(play_back_file);
 		}
 		Save_Last(current_game);
 		Add_points(Player1_User -> name, current_game -> player1_point - player1_last_score);

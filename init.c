@@ -38,6 +38,8 @@ void check_binary_files() {
 		system("type nul > Files\\Users.bin");
 	if (access("Files\\Loads.bin", F_OK))
 		system("type nul > Files\\Loads.bin");
+	if (access("Files\\Playback.bin", F_OK)) 
+		system("type nul > Files\\Playback.bin");
 	if (access("Files\\Theme.bin", F_OK)) {
 		system("type nul > Files\\Theme.bin");
 		FILE *theme = fopen("Files\\Theme.bin", "w");

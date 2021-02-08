@@ -34,8 +34,9 @@ void Solo_Player_menu() {
 
 void Start_solo_player_game(bool new_game) {
 	Start_init(new_game);
-	current_game -> mode = 1;
 	Save_Last(current_game);
+	current_game -> mode = 1;
+	
 	int winner_player = 2;
 	int player1_last_score = current_game -> player1_point;
 	while (Player1_Ships -> head -> nxt != Player1_Ships -> head && Player2_Ships -> head -> nxt != Player2_Ships -> head) {
@@ -43,12 +44,20 @@ void Start_solo_player_game(bool new_game) {
 			Player1_turn();
 			system("CLS");
 			Map_output(Player2_Map -> unknown_map, map_row, map_column);
+			FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
+			for (int i = 0; i < map_max_size; i++)
+				fwrite(Player2_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
+			fclose(play_back_file);
 		}
 		else {
 			Computer_turn();
 			system("CLS");
 			Map_output(Player1_Map -> unknown_map, map_row, map_column);
 			output_color_text(red, "\nThe computer has done its move\n");
+			FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
+			for (int i = 0; i < map_max_size; i++)
+				fwrite(Player1_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
+			fclose(play_back_file);
 		}
 		Save_Last(current_game);
 		Add_points(Player1_User -> name, current_game -> player1_point - player1_last_score);
