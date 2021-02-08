@@ -7,7 +7,7 @@
 #include <windows.h>
 #include "Game.c"
 
-#define DEBUG
+//#define DEBUG
 
 /* Global variables */
 enum color_array {light_blue = 1, light_green, light_cyan, light_red, light_pink, light_yellow, light_white, gray, blue, green, cyan, red, pink, yellow, white};

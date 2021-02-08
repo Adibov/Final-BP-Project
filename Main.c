@@ -5,9 +5,10 @@
 #include <assert.h>
 #include "init.c"
 
+// Repository link: https://github.com/Adibov/Final-BP-Project.git
+
 int main() {
     init();
-    // return 0;
     tutorial();
     main_menu();
     printf("\nend of main");
