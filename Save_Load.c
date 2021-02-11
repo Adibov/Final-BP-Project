@@ -102,7 +102,9 @@ Game *Read_Game_from_file(char *path, int indx) {
 		result -> Player1_Ships = Linked_List_init();
 		result -> Player2_Ships = Linked_List_init();
 		fread(result -> Player1_User -> name, sizeof(char), user_name_length, Last_Save_file);
+		fread(&(result -> Player1_User -> rocket_used), sizeof(bool), 1, Last_Save_file);
 		fread(result -> Player2_User -> name, sizeof(char), user_name_length, Last_Save_file);
+		fread(&(result -> Player2_User -> rocket_used), sizeof(bool), 1, Last_Save_file);
 		for (int i = 0; i < map_max_size; i++)
 			fread(result -> Player1_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
 		for (int i = 0; i < map_max_size; i++)
@@ -141,7 +143,9 @@ void Write_Game_to_file(Game *current_game, char *path, char *type) {
 
 	fwrite(current_game, sizeof(Game), 1, Last_Save_file);
 	fwrite(current_game -> Player1_User -> name, sizeof(char), user_name_length, Last_Save_file);
+	fwrite(&(current_game -> Player1_User -> rocket_used), sizeof(bool), 1, Last_Save_file);
 	fwrite(current_game -> Player2_User -> name, sizeof(char), user_name_length, Last_Save_file);
+	fwrite(&(current_game -> Player2_User -> rocket_used), sizeof(bool), 1, Last_Save_file);
 	for (int i = 0; i < map_max_size; i++)
 		fwrite(current_game -> Player1_Map -> known_map[i], sizeof(char), map_max_size, Last_Save_file);
 	for (int i = 0; i < map_max_size; i++)
