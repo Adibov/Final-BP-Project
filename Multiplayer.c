@@ -33,6 +33,7 @@ void Player2_shoot(int, int);
 void Player2_rocket_use(void);
 void destroy_ship(Ship *, char (*)[]);
 void Add_points(char *, int);
+void Save_Playback(int);
 
 /* functions definitions */
 void Multiplayer() {
@@ -421,6 +422,10 @@ void Start_init(bool new_game) {
 	}
 	system("del Files\\Playback.bin");
 	system("type nul > Files\\Playback.bin");
+	FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
+	fwrite(&map_row, sizeof(int), 1, play_back_file);
+	fwrite(&map_column, sizeof(int), 1, play_back_file);
+	fclose(play_back_file);
 }
 
 void Start_multiplayer_game(bool new_game) {
@@ -434,19 +439,13 @@ void Start_multiplayer_game(bool new_game) {
 			Player1_turn();
 			system("CLS");
 			Map_output(Player2_Map -> unknown_map, map_row, map_column);
-			FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
-			for (int i = 0; i < map_max_size; i++)
-				fwrite(Player2_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
-			fclose(play_back_file);
+			Save_Playback(1);
 		}
 		else {
 			Player2_turn();
 			system("CLS");
 			Map_output(Player1_Map -> unknown_map, map_row, map_column);
-			FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
-			for (int i = 0; i < map_max_size; i++)
-				fwrite(Player1_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
-			fclose(play_back_file);
+			Save_Playback(2);
 		}
 		Save_Last(current_game);
 		Add_points(Player1_User -> name, current_game -> player1_point - player1_last_score);
@@ -865,4 +864,16 @@ void Add_points(char *name, int dif) {
 	fseek(user_file, indx * sizeof(User), SEEK_SET);
 	fwrite(tmp_user, sizeof(User), 1, user_file);
 	fclose(user_file);
+}
+
+void Save_Playback(int turn) {
+	FILE *play_back_file = fopen("Files\\Playback.bin", "ab");
+	fwrite(&turn, sizeof(int), 1, play_back_file);
+	if (turn == 1)
+		for (int i = 0; i < map_max_size; i++)
+			fwrite(Player2_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
+	else
+		for (int i = 0; i < map_max_size; i++)
+			fwrite(Player1_Map -> unknown_map[i], sizeof(char), map_max_size, play_back_file);
+	fclose(play_back_file);
 }

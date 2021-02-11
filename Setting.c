@@ -227,8 +227,6 @@ void Map_setting() {
 	fwrite(&num, sizeof(int), 1, settings);
 	fwrite(ships_length, sizeof(int), num, settings);
 	fclose(settings);
-	system("del Files\\Playback.bin");
-	system("type nul > Files\\Playback.bin");
 	setting_init();
 }
 
@@ -299,10 +297,20 @@ void Theme_setting() {
 
 void Play_Back() {
 	FILE *play_back_file = fopen("Files\\Playback.bin", "rb");
+	int row_num, column_num, turn;
 	char tmp_map[100][100];
-	int turn = 1;
+	fread(&row_num, sizeof(int), 1, play_back_file);
+	fread(&column_num, sizeof(int), 1, play_back_file);
 	while (1) {
 		system("CLS");
+		fread(&turn, sizeof(int), 1, play_back_file);
+		if (turn == 1)
+			output_color_text(light_red, "First Player: \n\n");
+		else if (turn == 2)
+			output_color_text(light_red, "Second Player: \n\n");
+		else
+			output_color_text(light_red, "Computer: \n\n");
+
 		bool ended = 0;
 		for (int i = 0; i < map_max_size; i++)
 			if (fread(tmp_map[i], sizeof(char), map_max_size, play_back_file) < map_max_size) {
@@ -311,10 +319,9 @@ void Play_Back() {
 			}
 		if (ended)
 			break;
-		Map_output(tmp_map, map_row, map_column);
+		Map_output(tmp_map, row_num, column_num);
 		printf("\nPress any key to continue.");
 		getch();
-		turn = 3 - turn;
 	}
 	fclose(play_back_file);
 }
